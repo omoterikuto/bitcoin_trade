@@ -9,9 +9,10 @@ import (
 
 //APIInfo bitflyer API
 type APIInfo struct {
-	APISecret string
-	APIKey    string
-	LogFile   string
+	APISecret   string
+	APIKey      string
+	LogFile     string
+	ProductCode string
 }
 
 //Config APIInfo
@@ -25,8 +26,9 @@ func init() {
 	}
 
 	Config = APIInfo{
-		APIKey:    cfg.Section("bitflyer").Key("api_key").String(),
-		APISecret: cfg.Section("bitflyer").Key("api_secret").String(),
-		LogFile:   cfg.Section("fintech").Key("log_file").String(),
+		APIKey:      cfg.Section("bitflyer").Key("api_key").String(),
+		APISecret:   cfg.Section("bitflyer").Key("api_secret").String(),
+		LogFile:     cfg.Section("fintech").Key("log_file").String(),
+		ProductCode: cfg.Section("fintech").Key("product_code").String(),
 	}
 }
