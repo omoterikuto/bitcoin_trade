@@ -1,4 +1,4 @@
-module bitcoin_trade
+module btc_trade
 
 go 1.16
 

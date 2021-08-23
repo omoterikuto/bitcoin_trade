@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"bitcoin_trade/app/models"
-	"bitcoin_trade/bitflyer"
-	"bitcoin_trade/config"
+	"btc_trade/app/models"
+	"btc_trade/bitflyer"
+	"btc_trade/config"
 	"log"
 )
 

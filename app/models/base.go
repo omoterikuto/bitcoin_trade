@@ -1,7 +1,7 @@
 package models
 
 import (
-	"bitcoin_trade/config"
+	"btc_trade/config"
 	"database/sql"
 	"fmt"
 	"log"
