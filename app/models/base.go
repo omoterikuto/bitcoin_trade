@@ -1,8 +1,8 @@
 package models
 
 import (
+	"bitcoin_trade/config"
 	"database/sql"
-	"fintech/config"
 	"fmt"
 	"log"
 	"time"

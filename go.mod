@@ -1,4 +1,4 @@
-module fintech
+module bitcoin_trade
 
 go 1.16
 

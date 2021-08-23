@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fintech/bitflyer"
+	"bitcoin_trade/bitflyer"
 	"fmt"
 	"time"
 )

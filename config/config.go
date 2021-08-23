@@ -10,8 +10,8 @@ import (
 
 //APIInfo bitflyer API
 type APIInfo struct {
-	APISecret     string
-	APIKey        string
+	ApiSecret     string
+	ApiKey        string
 	LogFile       string
 	ProductCode   string
 	TradeDuration time.Duration
@@ -38,10 +38,10 @@ func init() {
 	}
 
 	Config = APIInfo{
-		APIKey:        cfg.Section("bitflyer").Key("api_key").String(),
-		APISecret:     cfg.Section("bitflyer").Key("api_secret").String(),
-		LogFile:       cfg.Section("fintech").Key("log_file").String(),
-		ProductCode:   cfg.Section("fintech").Key("product_code").String(),
+		ApiKey:        cfg.Section("bitflyer").Key("api_key").String(),
+		ApiSecret:     cfg.Section("bitflyer").Key("api_secret").String(),
+		LogFile:       cfg.Section("bitcoin_trade").Key("log_file").String(),
+		ProductCode:   cfg.Section("bitcoin_trade").Key("product_code").String(),
 		Durations:     durations,
 		TradeDuration: durations[cfg.Section("gotrading").Key("trade_duration").String()],
 		DbName:        cfg.Section("db").Key("name").String(),
