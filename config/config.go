@@ -8,21 +8,26 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-//APIInfo bitflyer API
-type APIInfo struct {
-	ApiSecret     string
-	ApiKey        string
-	LogFile       string
-	ProductCode   string
+type ConfigList struct {
+	ApiKey      string
+	ApiSecret   string
+	LogFile     string
+	ProductCode string
+
 	TradeDuration time.Duration
 	Durations     map[string]time.Duration
 	DbName        string
 	SQLDriver     string
 	Port          int
+
+	BackTest         bool
+	UsePercent       float64
+	DataLimit        int
+	StopLimitPercent float64
+	NumRanking       int
 }
 
-//Config APIInfo
-var Config APIInfo
+var Config ConfigList
 
 func init() {
 	cfg, err := ini.Load("config.ini")
@@ -37,15 +42,20 @@ func init() {
 		"1h": time.Hour,
 	}
 
-	Config = APIInfo{
-		ApiKey:        cfg.Section("bitflyer").Key("api_key").String(),
-		ApiSecret:     cfg.Section("bitflyer").Key("api_secret").String(),
-		LogFile:       cfg.Section("btc_trade").Key("log_file").String(),
-		ProductCode:   cfg.Section("btc_trade").Key("product_code").String(),
-		Durations:     durations,
-		TradeDuration: durations[cfg.Section("gotrading").Key("trade_duration").String()],
-		DbName:        cfg.Section("db").Key("name").String(),
-		SQLDriver:     cfg.Section("db").Key("driver").String(),
-		Port:          cfg.Section("web").Key("port").MustInt(),
+	Config = ConfigList{
+		ApiKey:           cfg.Section("bitflyer").Key("api_key").String(),
+		ApiSecret:        cfg.Section("bitflyer").Key("api_secret").String(),
+		LogFile:          cfg.Section("gotrading").Key("log_file").String(),
+		ProductCode:      cfg.Section("gotrading").Key("product_code").String(),
+		Durations:        durations,
+		TradeDuration:    durations[cfg.Section("gotrading").Key("trade_duration").String()],
+		DbName:           cfg.Section("db").Key("name").String(),
+		SQLDriver:        cfg.Section("db").Key("driver").String(),
+		Port:             cfg.Section("web").Key("port").MustInt(),
+		BackTest:         cfg.Section("gotrading").Key("back_test").MustBool(),
+		UsePercent:       cfg.Section("gotrading").Key("use_percent").MustFloat64(),
+		DataLimit:        cfg.Section("gotrading").Key("data_limit").MustInt(),
+		StopLimitPercent: cfg.Section("gotrading").Key("stop_limit_percent").MustFloat64(),
+		NumRanking:       cfg.Section("gotrading").Key("num_ranking").MustInt(),
 	}
 }
