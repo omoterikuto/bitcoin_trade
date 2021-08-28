@@ -9,6 +9,7 @@
 - docker化 
 - GCPデプロイ
 - k8s
+- ログイン機能
 
 ### possible
 - reactでSPA化
