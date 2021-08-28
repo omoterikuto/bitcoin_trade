@@ -4,6 +4,7 @@
 - エラーハンドリング
 - chart.htmlのbutton.changeの簡略化
 - scssファイル
+- buy、sell統一
 
 ### could
 - docker化 
