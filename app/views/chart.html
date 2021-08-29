@@ -562,7 +562,7 @@
                     dataTable.addColumn({type:'string', role:'annotation'});
 
                     if (data['events']['profit'] != undefined) {
-                        profit = "$" + String(Math.round(data['events']['profit'] * 100) / 100);
+                        profit = String(Math.round(data['events']['profit'] * 100) / 100) + "円";
                         $('#profit').html("Change:" + profit);
                     }
                 }
