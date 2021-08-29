@@ -61,13 +61,13 @@ func GetSignalEventsByCount(loadEvents int) *SignalEvents {
 	return &signalEvents
 }
 
-func GetSignalEventsAfterTime(dateTime time.Time) *SignalEvents {
+func GetSignalEventsAfterTime(timeTime time.Time) *SignalEvents {
 	cmd := fmt.Sprintf(`SELECT * FROM (
                 SELECT time, product_code, side, price, size FROM %s
                 WHERE DATETIME(time) >= DATETIME(?)
                 ORDER BY time DESC
             ) ORDER BY time ASC;`, tableNameSignalEvents)
-	rows, err := DbConnection.Query(cmd, dateTime.Format(time.RFC3339))
+	rows, err := DbConnection.Query(cmd, timeTime.Format(time.RFC3339))
 	if err != nil {
 		return nil
 	}
@@ -158,7 +158,7 @@ func (s *SignalEvents) Profit() float64 {
 			total -= signalEvent.Price * signalEvent.Size
 			isHolding = true
 		}
-		if signalEvent.Side == "SEL" {
+		if signalEvent.Side == "SELL" {
 			total += signalEvent.Price * signalEvent.Size
 			isHolding = false
 			beforeSell = total
