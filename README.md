@@ -12,6 +12,7 @@
 - k8s
 - ログイン機能
 - 一目均衡表のパラメータ変数化
+- rankingDB保存
 
 ### possible
 - reactでSPA化
