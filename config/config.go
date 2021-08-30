@@ -41,7 +41,6 @@ func init() {
 		"1m": time.Minute,
 		"1h": time.Hour,
 	}
-
 	Config = ConfigList{
 		ApiKey:           cfg.Section("bitflyer").Key("api_key").String(),
 		ApiSecret:        cfg.Section("bitflyer").Key("api_secret").String(),

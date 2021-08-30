@@ -21,8 +21,8 @@
 - Ai のmutex、singleton
 - ORMの使用
 - 最適化の並列処理
-- 売り買いしたらemail通知
 
 ### possible
 - reactでSPA化
 - bitflyer以外のAPI使用できるように
+- 売り買いしたらemail通知

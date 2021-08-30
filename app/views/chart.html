@@ -90,7 +90,7 @@
             macd: {
                 enable: false,
                 indexes: [],
-                periods: [],
+                periods: [$("#inputSmaPeriod1").val(), $("#inputSmaPeriod2").val(), $("#inputSmaPeriod3").val()],
                 values: []
             },
             hv: {
@@ -395,6 +395,7 @@
                 params["macdPeriod1"] = config.macd.periods[0];
                 params["macdPeriod2"] = config.macd.periods[1];
                 params["macdPeriod3"] = config.macd.periods[2];
+                console.log(params)
             }
 
             if (config.hv.enable == true) {
