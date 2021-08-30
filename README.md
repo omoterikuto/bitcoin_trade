@@ -8,12 +8,12 @@
 - buy、sell統一
 - scssファイル
 - エラーハンドリング、logging
+- docker化 
 
 ### could
-- docker化 
 - GCPデプロイ
 - k8s
-- ログイン機能
+- ログイン、ユーザー機能
 - 一目均衡表のパラメータ変数化
 - rankingDB保存
 - indicator増やす
