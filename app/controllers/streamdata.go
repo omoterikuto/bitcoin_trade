@@ -4,6 +4,7 @@ import (
 	"btc_trade/app/models"
 	"btc_trade/bitflyer"
 	"btc_trade/config"
+	"fmt"
 	"log"
 )
 
@@ -13,6 +14,7 @@ func StreamIngestionData() {
 
 	var tickerChannl = make(chan bitflyer.Ticker)
 	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
+	fmt.Println("________")
 	go apiClient.GetRealTimeTicker(config.Config.ProductCode, tickerChannl)
 	go func() {
 		for ticker := range tickerChannl {
