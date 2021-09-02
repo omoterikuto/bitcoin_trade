@@ -1,9 +1,9 @@
 package models
 
 import (
-	"btc_trade/config"
 	"encoding/json"
 	"sort"
+	"src/config"
 	"time"
 )
 

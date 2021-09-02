@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"btc_trade/app/models"
-	"btc_trade/bitflyer"
-	"btc_trade/config"
 	"fmt"
 	"log"
+	"src/app/models"
+	"src/bitflyer"
+	"src/config"
 )
 
 func StreamIngestionData() {

@@ -1,8 +1,8 @@
 package models
 
 import (
-	"btc_trade/config"
 	"fmt"
+	"src/config"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -61,13 +61,12 @@ func sqlConnect() (db *gorm.DB) {
 	if err != nil {
 		for {
 			if err == nil {
-				fmt.Println("DB接続成功")
 				break
 			}
 			fmt.Print(".")
 			time.Sleep(time.Second)
 			count++
-			if count > 30 {
+			if count > 10 {
 				fmt.Println("")
 				fmt.Println("DB接続失敗")
 				panic(err)
@@ -75,6 +74,7 @@ func sqlConnect() (db *gorm.DB) {
 			db, err = gorm.Open(c.SQLDriver, dataSourceName)
 		}
 	}
+	fmt.Println("DB接続成功")
 
 	return db
 }

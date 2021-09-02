@@ -1,7 +1,7 @@
 package models
 
 import (
-	"btc_trade/bitflyer"
+	"src/bitflyer"
 	"time"
 
 	"github.com/jinzhu/gorm"

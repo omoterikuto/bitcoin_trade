@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	"btc_trade/app/models"
-	"btc_trade/config"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"regexp"
+	"src/app/models"
+	"src/config"
 	"strconv"
 )
 
@@ -203,7 +203,7 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func StartWebServer() error {
-	http.HandleFunc("/api/candle/", apiMakeHandler(apiCandleHandler))
+	// http.HandleFunc("/api/candle/", apiMakeHandler(apiCandleHandler))
 	http.HandleFunc("/chart/", viewChartHandler)
 	return http.ListenAndServe(fmt.Sprintf(":%d", config.Config.WebPort), nil)
 }

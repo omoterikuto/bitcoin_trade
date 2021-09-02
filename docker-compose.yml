@@ -4,11 +4,10 @@ services:
     build:
       context: .
       dockerfile: DockerFile
-    command: /bin/sh -c "go run main.go"
     stdin_open: true
     tty: true
     volumes:
-      - .:/app
+      - ./src:/go/src
     ports:
       - 8080:8080
     environment:

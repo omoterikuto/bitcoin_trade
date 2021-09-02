@@ -1,9 +1,9 @@
 package models
 
 import (
-	"btc_trade/config"
-	"btc_trade/tradingalgo"
 	"sort"
+	"src/config"
+	"src/tradingalgo"
 	"time"
 
 	"github.com/markcheno/go-talib"

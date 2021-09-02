@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"btc_trade/app/models"
-	"btc_trade/bitflyer"
-	"btc_trade/config"
-	"btc_trade/tradingalgo"
 	"log"
 	"math"
+	"src/app/models"
+	"src/bitflyer"
+	"src/config"
+	"src/tradingalgo"
 	"strings"
 	"time"
 
