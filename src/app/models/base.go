@@ -32,12 +32,6 @@ func init() {
 		fmt.Println(err)
 	}
 
-	sqlDb, err := Db.DB()
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer sqlDb.Close()
-
 	err = migrate()
 	if err != nil {
 		fmt.Println(err)
