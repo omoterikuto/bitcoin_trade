@@ -26,7 +26,8 @@ var Db *gorm.DB
 
 func init() {
 	fmt.Println("base")
-	Db, err := sqlConnect()
+	var err error
+	Db, err = sqlConnect()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -37,12 +38,10 @@ func init() {
 	}
 	defer sqlDb.Close()
 
-	err = Migrate()
-
+	err = migrate()
 	if err != nil {
 		fmt.Println(err)
 	}
-
 }
 
 func sqlConnect() (sqlDb *gorm.DB, err error) {
@@ -81,7 +80,7 @@ func sqlConnect() (sqlDb *gorm.DB, err error) {
 	return db, err
 }
 
-func Migrate() (err error) {
+func migrate() (err error) {
 	Db.AutoMigrate(&SignalEvent{})
 
 	for _, duration := range config.Config.Durations {
