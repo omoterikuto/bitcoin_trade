@@ -1,10 +1,9 @@
 package models
 
 import (
+	"fmt"
 	"src/bitflyer"
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 type Candle struct {
@@ -16,9 +15,6 @@ type Candle struct {
 	High        float64       `json:"high"`
 	Low         float64       `json:"low"`
 	Volume      float64       `json:"volume"`
-}
-type DbCandle struct {
-	gorm.Model
 }
 
 func NewCandle(productCode string, duration time.Duration, timeDate time.Time, open, close, high, low, volume float64) *Candle {
@@ -107,28 +103,30 @@ func CreateCandleWithDuration(ticker bitflyer.Ticker, productCode string, durati
 
 func GetAllCandle(productCode string, duration time.Duration, limit int) (dfCandle *DataFrameCandle, err error) {
 	tableName := GetCandleTableName(productCode, duration)
-	candles := []Candle{}
-	Db.Raw("SELECT * FROM (time, open, close, high, low, volume FROM %s ORDER BY time DESC LIMIT ?) ORDER BY time ASC;", tableName).Scan(candles)
+	// candles := []Candle{}
+	rows, err := Db.Raw("SELECT * FROM (time, open, close, high, low, volume FROM %s ORDER BY time DESC LIMIT ?) ORDER BY time ASC;", tableName).Rows()
+	fmt.Println(err)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(rows)
 	// rows, err := DbConnection.Query(cmd, limit)
-	// if err != nil {
-	// 	return
-	// }
 	// defer Db.Close()
 
-	dfCandle = &DataFrameCandle{}
-	dfCandle.ProductCode = productCode
-	dfCandle.Duration = duration
-	dfCandle.Candles = candles
-	// for rows.Next() {
-	// 	var candle Candle
-	// 	candle.ProductCode = productCode
-	// 	candle.Duration = duration
-	// 	rows.Scan(&candle.Time, &candle.Open, &candle.Close, &candle.High, &candle.Low, &candle.Volume)
-	// 	dfCandle.Candles = append(dfCandle.Candles, candle)
-	// }
-	// err = rows.Err()
-	// if err != nil {
-	// 	return
-	// }
+	// dfCandle = &DataFrameCandle{}
+	// dfCandle.ProductCode = productCode
+	// dfCandle.Duration = duration
+	// dfCandle.Candles = candles
+	for rows.Next() {
+		var candle Candle
+		candle.ProductCode = productCode
+		candle.Duration = duration
+		rows.Scan(&candle.Time, &candle.Open, &candle.Close, &candle.High, &candle.Low, &candle.Volume)
+		dfCandle.Candles = append(dfCandle.Candles, candle)
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
 	return dfCandle, nil
 }

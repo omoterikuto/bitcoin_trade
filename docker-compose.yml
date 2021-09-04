@@ -15,6 +15,7 @@ services:
 
   db:
     image: mysql:8.0
+    container_name: db-container
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: btc_trade
@@ -27,7 +28,8 @@ services:
       - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
     ports:
       - 3306:3306
-    container_name: db-container
+    cap_add:
+      - SYS_NICE #mbind: Operation not permitted エラー消すため
 
 volumes:
   db-data:

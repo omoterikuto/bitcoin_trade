@@ -5,13 +5,18 @@ import (
 	"src/config"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-const (
-	tableNameSignalEvents = "signal_events"
-)
+type DbCandle struct {
+	Time   time.Time `gorm:"primaryKey"`
+	Open   float64   `gorm:"float, type:not null"`
+	Close  float64   `gorm:"float, type:not null"`
+	High   float64   `gorm:"float, type:not null"`
+	Low    float64   `gorm:"float, type:not null"`
+	Volume float64   `gorm:"float, type:not null"`
+}
 
 func GetCandleTableName(productCode string, duration time.Duration) string {
 	return fmt.Sprintf("%s_%s", productCode, duration)
@@ -21,42 +26,36 @@ var Db *gorm.DB
 
 func init() {
 	fmt.Println("base")
-	Db := sqlConnect()
+	Db, err := sqlConnect()
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	defer Db.Close()
+	sqlDb, err := Db.DB()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer sqlDb.Close()
 
-	// Db.CreateTable(&SignalEvent{})
-	fmt.Println("base_end")
-	// cmd := fmt.Sprintf(`
-	//     CREATE TABLE IF NOT EXISTS %s (
-	//         time DATETIME PRIMARY KEY NOT NULL,
-	//         product_code STRING,
-	//         side STRING,
-	//         price FLOAT,
-	//         size FLOAT)`, tableNameSignalEvents)
-	// DbConnection.Exec(cmd)
+	err = Migrate()
 
-	// for _, duration := range config.Config.Durations {
-	// 	tableName := GetCandleTableName(config.Config.ProductCode, duration)
-	// 	c := fmt.Sprintf(`
-	//         CREATE TABLE IF NOT EXISTS %s (
-	//         time DATETIME PRIMARY KEY NOT NULL,
-	//         open FLOAT,
-	//         close FLOAT,
-	//         high FLOAT,
-	//         low FLOAT,
-	// 		volume FLOAT)`, tableName)
-	// 	DbConnection.Exec(c)
-	// }
+	if err != nil {
+		fmt.Println(err)
+	}
+
 }
 
-func sqlConnect() (db *gorm.DB) {
+func sqlConnect() (sqlDb *gorm.DB, err error) {
 	c := config.Config
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", c.DbUser, c.DbPassword, c.DbContainer, c.DbPort, c.DbName)
-	fmt.Println(dataSourceName)
+
+	db, err := gorm.Open(mysql.Open(dataSourceName), &gorm.Config{})
+
+	if err != nil {
+		return nil, err
+	}
 
 	count := 0
-	db, err := gorm.Open(c.SQLDriver, dataSourceName)
 
 	if err != nil {
 		for {
@@ -67,14 +66,37 @@ func sqlConnect() (db *gorm.DB) {
 			time.Sleep(time.Second)
 			count++
 			if count > 10 {
-				fmt.Println("")
 				fmt.Println("DB接続失敗")
-				panic(err)
+				return nil, err
 			}
-			db, err = gorm.Open(c.SQLDriver, dataSourceName)
+			db, err = gorm.Open(mysql.New(mysql.Config{
+				DriverName: "mysql",
+				DSN:        dataSourceName,
+			}), &gorm.Config{})
 		}
 	}
+
 	fmt.Println("DB接続成功")
 
-	return db
+	return db, err
+}
+
+func Migrate() (err error) {
+	Db.AutoMigrate(&SignalEvent{})
+
+	for _, duration := range config.Config.Durations {
+		tableName := GetCandleTableName(config.Config.ProductCode, duration)
+		if !Db.Migrator().HasTable(tableName) {
+			err := Db.Migrator().CreateTable(&DbCandle{})
+			if err != nil {
+				return err
+			}
+			err = Db.Migrator().RenameTable(&DbCandle{}, tableName)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

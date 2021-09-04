@@ -18,7 +18,7 @@ type SignalEvent struct {
 func (s *SignalEvent) Save() bool {
 	// cmd := fmt.Sprintf("INSERT INTO %s (time, product_code, side, price, size) VALUES (?, ?, ?, ?, ?)", tableNameSignalEvents)
 	// _, err := DbConnection.Exec(cmd, s.Time.Format(time.RFC3339), s.ProductCode, s.Side, s.Price, s.Size)
-	Db.Table(tableNameSignalEvents).Create(&s)
+	Db.Select("*").Create(&s)
 	// if err != nil {
 	// 	if strings.Contains(err.Error(), "UNIQUE constraint failed") {
 	// 		log.Println(err)
