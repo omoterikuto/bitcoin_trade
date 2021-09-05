@@ -125,16 +125,8 @@ func (t *Ticker) GetMidPrice() float64 {
 	return (t.BestBid + t.BestAsk) / 2
 }
 
-func (t *Ticker) JpDateTime() time.Time {
-	// dateTime, err := time.Parse(time.RFC3339, t.DateTime)
-	// if err != nil {
-	// 	log.Printf("action=DateTime, err=%s", err.Error())
-	// }
-	return t.DateTime
-}
-
 func (t *Ticker) TruncateDateTime(duration time.Duration) time.Time {
-	return t.JpDateTime().Truncate(duration)
+	return t.DateTime.Truncate(duration)
 }
 
 func (api *APIClient) GetTicker(productCode string) (*Ticker, error) {
