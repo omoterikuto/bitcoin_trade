@@ -60,7 +60,7 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UsePercen
 		SignalEvents:     signalEvents,
 		TradeSemaphore:   semaphore.NewWeighted(1),
 		BackTest:         backTest,
-		StartTrade:       time.Now().UTC(),
+		StartTrade:       time.Now(),
 		StopLimitPercent: stopLimitPercent,
 	}
 	Ai.UpdateOptimizeParams(false)
@@ -70,7 +70,7 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UsePercen
 func (ai *AI) UpdateOptimizeParams(isContinue bool) {
 	df, _ := models.GetAllCandle(ai.ProductCode, ai.Duration, ai.PastPeriod)
 	ai.OptimizedTradeParams = df.OptimizeParams()
-	log.Printf("optimized_trade_params=%+v", ai.OptimizedTradeParams)
+	// log.Printf("optimized_trade_params=%+v", ai.OptimizedTradeParams)
 	if ai.OptimizedTradeParams == nil && isContinue && !ai.BackTest {
 		log.Print("status_no_params")
 		time.Sleep(10 * ai.Duration)

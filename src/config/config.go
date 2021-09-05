@@ -35,6 +35,8 @@ type ConfigList struct {
 var Config ConfigList
 
 func init() {
+	setTimeZone()
+
 	cfg, err := ini.Load("config.ini")
 	if err != nil {
 		log.Printf("Failed to read file: %v", err)
@@ -69,4 +71,15 @@ func init() {
 		ApiKey:    cfg.Section("bitflyer").Key("api_key").String(),
 		ApiSecret: cfg.Section("bitflyer").Key("api_secret").String(),
 	}
+}
+
+var Location *time.Location
+
+func setTimeZone() {
+	var err error
+	Location, err = time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		Location = time.FixedZone("Asia/Tokyo", 9*60*60)
+	}
+	time.Local = Location
 }

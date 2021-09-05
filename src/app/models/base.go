@@ -9,15 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type DbCandle struct {
-	Time   time.Time `gorm:"primaryKey"`
-	Open   float64   `gorm:"float, type:not null"`
-	Close  float64   `gorm:"float, type:not null"`
-	High   float64   `gorm:"float, type:not null"`
-	Low    float64   `gorm:"float, type:not null"`
-	Volume float64   `gorm:"float, type:not null"`
-}
-
 func GetCandleTableName(productCode string, duration time.Duration) string {
 	return fmt.Sprintf("%s_%s", productCode, duration)
 }
@@ -25,7 +16,6 @@ func GetCandleTableName(productCode string, duration time.Duration) string {
 var Db *gorm.DB
 
 func init() {
-	fmt.Println("base")
 	var err error
 	Db, err = sqlConnect()
 	if err != nil {
@@ -40,9 +30,16 @@ func init() {
 
 func sqlConnect() (sqlDb *gorm.DB, err error) {
 	c := config.Config
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", c.DbUser, c.DbPassword, c.DbContainer, c.DbPort, c.DbName)
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=%s", c.DbUser, c.DbPassword, c.DbContainer, c.DbPort, c.DbName, "Asia%2FTokyo")
 
-	db, err := gorm.Open(mysql.Open(dataSourceName), &gorm.Config{})
+	// db, err := gorm.Open(mysql.Open(dataSourceName),mysql.New(mysql.Config{
+	// 	DisableDatetimePrecision: true,
+	// }), &gorm.Config{})
+
+	db, err := gorm.Open(mysql.New(mysql.Config{
+		DSN:                      dataSourceName, // data source name
+		DisableDatetimePrecision: true,           // disable datetime precision, which not supported before MySQL 5.6
+	}), &gorm.Config{})
 
 	if err != nil {
 		return nil, err
@@ -58,7 +55,7 @@ func sqlConnect() (sqlDb *gorm.DB, err error) {
 			fmt.Print(".")
 			time.Sleep(time.Second)
 			count++
-			if count > 10 {
+			if count > 20 {
 				fmt.Println("DB接続失敗")
 				return nil, err
 			}
@@ -80,11 +77,11 @@ func migrate() (err error) {
 	for _, duration := range config.Config.Durations {
 		tableName := GetCandleTableName(config.Config.ProductCode, duration)
 		if !Db.Migrator().HasTable(tableName) {
-			err := Db.Migrator().CreateTable(&DbCandle{})
+			err := Db.Migrator().CreateTable(&Candle{})
 			if err != nil {
 				return err
 			}
-			err = Db.Migrator().RenameTable(&DbCandle{}, tableName)
+			err = Db.Migrator().RenameTable(&Candle{}, tableName)
 			if err != nil {
 				return err
 			}

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"src/app/models"
 	"src/bitflyer"
@@ -14,7 +13,6 @@ func StreamIngestionData() {
 
 	var tickerChannl = make(chan bitflyer.Ticker)
 	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
-	fmt.Println("________")
 	go apiClient.GetRealTimeTicker(config.Config.ProductCode, tickerChannl)
 	go func() {
 		for ticker := range tickerChannl {
