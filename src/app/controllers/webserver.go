@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	"btc_trade/app/models"
-	"btc_trade/config"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"regexp"
+	"src/app/models"
+	"src/config"
 	"strconv"
 )
 
@@ -66,7 +66,10 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	durationTime := config.Config.Durations[duration]
 
-	df, _ := models.GetAllCandle(productCode, durationTime, limit)
+	df, err := models.GetAllCandle(productCode, durationTime, limit)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	sma := r.URL.Query().Get("sma")
 	if sma != "" {
@@ -205,5 +208,5 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 func StartWebServer() error {
 	http.HandleFunc("/api/candle/", apiMakeHandler(apiCandleHandler))
 	http.HandleFunc("/chart/", viewChartHandler)
-	return http.ListenAndServe(fmt.Sprintf(":%d", config.Config.Port), nil)
+	return http.ListenAndServe(fmt.Sprintf(":%d", config.Config.WebPort), nil)
 }

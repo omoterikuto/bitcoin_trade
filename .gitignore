@@ -3,3 +3,5 @@ btc_trade
 go.sum
 btc_trade.log
 stockdata.sql
+config.ini
+air.log

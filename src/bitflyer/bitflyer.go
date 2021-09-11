@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"src/config"
 	"strconv"
 	"time"
 
@@ -59,7 +60,6 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 	req, err := http.NewRequest(method, endpoint, bytes.NewBuffer(data))
 	if err != nil {
 		log.Printf("%s", err)
-		fmt.Println(err)
 		return nil, err
 	}
 	q := req.URL.Query()
@@ -107,34 +107,26 @@ func (api *APIClient) GetBalance() ([]Balance, error) {
 }
 
 type Ticker struct {
-	ProductCode     string  `json:"product_code"`
-	Timestamp       string  `json:"timestamp"`
-	TickID          int     `json:"tick_id"`
-	BestBid         float64 `json:"best_bid"`
-	BestAsk         float64 `json:"best_ask"`
-	BestBidSize     float64 `json:"best_bid_size"`
-	BestAskSize     float64 `json:"best_ask_size"`
-	TotalBidDepth   float64 `json:"total_bid_depth"`
-	TotalAskDepth   float64 `json:"total_ask_depth"`
-	Ltp             float64 `json:"ltp"`
-	Volume          float64 `json:"volume"`
-	VolumeByProduct float64 `json:"volume_by_product"`
+	ProductCode     string    `json:"product_code"`
+	DateTime        time.Time `json:"timestamp"`
+	TickID          int       `json:"tick_id"`
+	BestBid         float64   `json:"best_bid"`
+	BestAsk         float64   `json:"best_ask"`
+	BestBidSize     float64   `json:"best_bid_size"`
+	BestAskSize     float64   `json:"best_ask_size"`
+	TotalBidDepth   float64   `json:"total_bid_depth"`
+	TotalAskDepth   float64   `json:"total_ask_depth"`
+	Ltp             float64   `json:"ltp"`
+	Volume          float64   `json:"volume"`
+	VolumeByProduct float64   `json:"volume_by_product"`
 }
 
 func (t *Ticker) GetMidPrice() float64 {
 	return (t.BestBid + t.BestAsk) / 2
 }
 
-func (t *Ticker) DateTime() time.Time {
-	dateTime, err := time.Parse(time.RFC3339, t.Timestamp)
-	if err != nil {
-		log.Printf("action=DateTime, err=%s", err.Error())
-	}
-	return dateTime
-}
-
 func (t *Ticker) TruncateDateTime(duration time.Duration) time.Time {
-	return t.DateTime().Truncate(duration)
+	return t.DateTime.Truncate(duration)
 }
 
 func (api *APIClient) GetTicker(productCode string) (*Ticker, error) {
@@ -200,6 +192,7 @@ OUTER:
 						if err := json.Unmarshal(marshaTic, &ticker); err != nil {
 							continue OUTER
 						}
+						ticker.DateTime = ticker.DateTime.In(config.Location)
 						ch <- ticker
 					}
 				}

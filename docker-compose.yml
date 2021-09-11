@@ -1,0 +1,36 @@
+version: '3'
+services:
+  go:
+    build:
+      context: .
+      dockerfile: DockerFile
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./src:/go/src
+    ports:
+      - 8080:8080
+    environment:
+      MYSQL_HOST: db-container
+
+  db:
+    image: mysql:8.0
+    container_name: db-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: btc_trade
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - 3306:3306
+    cap_add:
+      - SYS_NICE #mbind: Operation not permitted エラー消すため
+
+volumes:
+  db-data:
+    driver: local
