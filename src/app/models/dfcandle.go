@@ -2,7 +2,6 @@ package models
 
 import (
 	"sort"
-	"src/config"
 	"src/tradingalgo"
 	"time"
 
@@ -479,7 +478,8 @@ func (df *DataFrameCandle) OptimizeParams() *TradeParams {
 
 	isEnable := false
 	for i, ranking := range rankings {
-		if i >= config.Config.NumRanking {
+		if i >= 3 {
+			// if i >= config.Config.NumRanking {
 			break
 		}
 		if ranking.Performance > 0 {

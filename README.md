@@ -8,12 +8,12 @@
 - buy、sell統一
 - scssファイル
 - エラーハンドリング、logging
-- docker化 
-
-### could
 - GCPデプロイ
 - k8s
-- ログイン、ユーザー機能
+- test
+
+### could
+- react導入
 - 一目均衡表のパラメータ変数化
 - rankingDB保存
 - indicator増やす
@@ -23,6 +23,6 @@
 - 最適化の並列処理
 
 ### possible
-- reactでSPA化
+- ログイン、ユーザー機能
 - bitflyer以外のAPI使用できるように
 - 売り買いしたらemail通知

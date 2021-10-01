@@ -23,7 +23,7 @@ type AI struct {
 	ProductCode          string
 	CurrencyCode         string
 	CoinCode             string
-	UsePercent           float64
+	UseRate              float64
 	MinuteToExpires      int
 	Duration             time.Duration
 	PastPeriod           int
@@ -31,7 +31,7 @@ type AI struct {
 	OptimizedTradeParams *models.TradeParams
 	TradeSemaphore       *semaphore.Weighted
 	StopLimit            float64
-	StopLimitPercent     float64
+	StopLimitRate        float64
 	BackTest             bool
 	StartTrade           time.Time
 }
@@ -39,7 +39,7 @@ type AI struct {
 // TODO mutex, singleton
 var Ai *AI
 
-func NewAI(productCode string, duration time.Duration, pastPeriod int, UsePercent, stopLimitPercent float64, backTest bool) *AI {
+func NewAI(productCode string, duration time.Duration, pastPeriod int, UseRate, StopLimitRate float64, backTest bool) *AI {
 	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
 	var signalEvents *models.SignalEvents
 	if backTest {
@@ -49,19 +49,19 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UsePercen
 	}
 	codes := strings.Split(productCode, "_")
 	Ai = &AI{
-		API:              apiClient,
-		ProductCode:      productCode,
-		CoinCode:         codes[0],
-		CurrencyCode:     codes[1],
-		UsePercent:       UsePercent,
-		MinuteToExpires:  1,
-		PastPeriod:       pastPeriod,
-		Duration:         duration,
-		SignalEvents:     signalEvents,
-		TradeSemaphore:   semaphore.NewWeighted(1),
-		BackTest:         backTest,
-		StartTrade:       time.Now(),
-		StopLimitPercent: stopLimitPercent,
+		API:             apiClient,
+		ProductCode:     productCode,
+		CoinCode:        codes[0],
+		CurrencyCode:    codes[1],
+		UseRate:         UseRate,
+		MinuteToExpires: 1,
+		PastPeriod:      pastPeriod,
+		Duration:        duration,
+		SignalEvents:    signalEvents,
+		TradeSemaphore:  semaphore.NewWeighted(1),
+		BackTest:        backTest,
+		StartTrade:      time.Now(),
+		StopLimitRate:   StopLimitRate,
 	}
 	Ai.UpdateOptimizeParams(false)
 	return Ai
@@ -93,7 +93,7 @@ func (ai *AI) Buy(candle models.Candle) (childOrderAcceptanceID string, isOrderC
 	}
 
 	availableCurrency, _ := ai.GetAvailableBalance()
-	useCurrency := availableCurrency * ai.UsePercent
+	useCurrency := availableCurrency * ai.UseRate
 	ticker, err := ai.API.GetTicker(ai.ProductCode)
 	if err != nil {
 		return
@@ -269,7 +269,7 @@ func (ai *AI) Trade() {
 			if !isOrderCompleted {
 				continue
 			}
-			ai.StopLimit = df.Candles[i].Close * ai.StopLimitPercent
+			ai.StopLimit = df.Candles[i].Close * ai.StopLimitRate
 		}
 
 		if sellPoint > 0 || ai.StopLimit > df.Candles[i].Close {
