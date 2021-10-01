@@ -14,11 +14,65 @@ import (
 
 var templates = template.Must(template.ParseFiles("app/views/chart.html"))
 
+func StartWebServer() error {
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("app/resources/"))))
+	http.HandleFunc("/api/candle/", apiMakeHandler(apiCandleHandler))
+	http.HandleFunc("/chart/", viewChartHandler)
+	http.HandleFunc("/setting/", settingSaveHandler)
+	return http.ListenAndServe(fmt.Sprintf(":%d", config.Config.WebPort), nil)
+}
+
 func viewChartHandler(w http.ResponseWriter, r *http.Request) {
-	err := templates.ExecuteTemplate(w, "chart.html", nil)
+	s := models.TradeSetting{}
+	models.Db.First(&s)
+
+	data := map[string]interface{}{
+		"productCode":   config.Config.ProductCode,
+		"duration":      s.TradeDuration,
+		"limit":         s.DataLimit,
+		"backTest":      s.BackTest,
+		"userRate":      s.UseRate,
+		"dataLimit":     s.DataLimit,
+		"stopLimitRate": s.StopLimitRate,
+		"numRanking":    s.NumRanking,
+	}
+
+	err := templates.ExecuteTemplate(w, "chart.html", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func settingSaveHandler(w http.ResponseWriter, r *http.Request) {
+	s := models.TradeSetting{}
+	models.Db.First(&s)
+	var err error
+
+	s.TradeDuration = r.FormValue("tradeDuration")
+	s.BackTest, err = strconv.ParseBool(r.FormValue("backTest"))
+	if err != nil {
+		fmt.Println("parse error:", err)
+	}
+	s.UseRate, err = strconv.ParseFloat(r.FormValue("useRate"), 64)
+	if err != nil {
+		fmt.Println("parse error:", err)
+	}
+	s.DataLimit, err = strconv.Atoi(r.FormValue("dataLimit"))
+	if err != nil {
+		fmt.Println("parse error:", err)
+	}
+	s.StopLimitRate, err = strconv.ParseFloat(r.FormValue("stopLimitRate"), 64)
+	if err != nil {
+		fmt.Println("parse error:", err)
+	}
+	s.NumRanking, err = strconv.Atoi(r.FormValue("numRanking"))
+	if err != nil {
+		fmt.Println("parse error:", err)
+	}
+
+	models.Db.Save(&s)
+
+	viewChartHandler(w, r)
 }
 
 type JSONError struct {
@@ -188,8 +242,10 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	events := r.URL.Query().Get("events")
+	s := models.TradeSetting{}
+	models.Db.First(&s)
 	if events != "" {
-		if config.Config.BackTest {
+		if s.BackTest {
 			df.Events = Ai.SignalEvents.CollectAfter(df.Candles[0].Time)
 		} else {
 			firstTime := df.Candles[0].Time
@@ -203,10 +259,4 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
-}
-
-func StartWebServer() error {
-	http.HandleFunc("/api/candle/", apiMakeHandler(apiCandleHandler))
-	http.HandleFunc("/chart/", viewChartHandler)
-	return http.ListenAndServe(fmt.Sprintf(":%d", config.Config.WebPort), nil)
 }

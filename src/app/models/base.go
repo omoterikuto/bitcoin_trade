@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"src/config"
 	"time"
@@ -8,6 +9,16 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+type TradeSetting struct {
+	ID            int     `gorm:"primaryKey"`
+	TradeDuration string  `gorm:"default:1m"`
+	BackTest      bool    `gorm:"default:true"`
+	UseRate       float64 `gorm:"default:0.9"`
+	DataLimit     int     `gorm:"default:365"`
+	StopLimitRate float64 `gorm:"default:0.1"`
+	NumRanking    int     `gorm:"default:3"`
+}
 
 func GetCandleTableName(productCode string, duration time.Duration) string {
 	return fmt.Sprintf("%s_%s", productCode, duration)
@@ -32,18 +43,10 @@ func sqlConnect() (sqlDb *gorm.DB, err error) {
 	c := config.Config
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=%s", c.DbUser, c.DbPassword, c.DbContainer, c.DbPort, c.DbName, "Asia%2FTokyo")
 
-	// db, err := gorm.Open(mysql.Open(dataSourceName),mysql.New(mysql.Config{
-	// 	DisableDatetimePrecision: true,
-	// }), &gorm.Config{})
-
 	db, err := gorm.Open(mysql.New(mysql.Config{
-		DSN:                      dataSourceName, // data source name
-		DisableDatetimePrecision: true,           // disable datetime precision, which not supported before MySQL 5.6
+		DSN:                      dataSourceName,
+		DisableDatetimePrecision: true,
 	}), &gorm.Config{})
-
-	if err != nil {
-		return nil, err
-	}
 
 	count := 0
 
@@ -73,6 +76,12 @@ func sqlConnect() (sqlDb *gorm.DB, err error) {
 
 func migrate() (err error) {
 	Db.AutoMigrate(&SignalEvent{})
+	Db.AutoMigrate(&TradeSetting{})
+
+	result := Db.Take(&TradeSetting{})
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		Db.Create(&TradeSetting{})
+	}
 
 	for _, duration := range config.Config.Durations {
 		tableName := GetCandleTableName(config.Config.ProductCode, duration)
