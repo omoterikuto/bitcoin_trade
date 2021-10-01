@@ -11,13 +11,7 @@ import (
 type ConfigList struct {
 	LogFile     string
 	ProductCode string
-	// TradeDuration    time.Duration
-	Durations map[string]time.Duration
-	// BackTest         bool
-	// UseRate       float64
-	// DataLimit        int
-	// StopLimitPercent float64
-	// NumRanking       int
+	Durations   map[string]time.Duration
 
 	DbName      string
 	SQLDriver   string
@@ -55,12 +49,6 @@ func init() {
 		LogFile:     cfg.Section("btc_trade").Key("log_file").String(),
 		ProductCode: cfg.Section("btc_trade").Key("product_code").String(),
 		Durations:   durations,
-		// TradeDuration:    durations[cfg.Section("btc_trade").Key("trade_duration").String()],
-		// BackTest:         cfg.Section("btc_trade").Key("back_test").MustBool(),
-		// UseRate:       cfg.Section("btc_trade").Key("use_percent").MustFloat64(),
-		// DataLimit:        cfg.Section("btc_trade").Key("data_limit").MustInt(),
-		// StopLimitPercent: cfg.Section("btc_trade").Key("stop_limit_percent").MustFloat64(),
-		// NumRanking:       cfg.Section("btc_trade").Key("num_ranking").MustInt(),
 
 		DbName:      cfg.Section("db").Key("name").String(),
 		SQLDriver:   cfg.Section("db").Key("driver").String(),

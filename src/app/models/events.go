@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"sort"
 	"src/config"
 	"time"
@@ -44,7 +45,7 @@ func GetSignalEventsByCount(loadEvents int) *SignalEvents {
 	// rows, err := DbConnection.Query(cmd, config.Config.ProductCode, loadEvents)
 
 	eventSlices := []SignalEvent{}
-	Db.Find(eventSlices, "product_code=?", config.Config.ProductCode).Order("time desc").Limit(loadEvents)
+	Db.Where("product_code=?", config.Config.ProductCode).Order("time desc").Limit(loadEvents).Find(&eventSlices)
 
 	sort.Slice(eventSlices, func(i, j int) bool {
 		return eventSlices[i].Time.Before(eventSlices[j].Time)
@@ -76,7 +77,7 @@ func GetSignalEventsAfterTime(dateTime time.Time) *SignalEvents {
 	// 	signalEvents.Signals = append(signalEvents.Signals, signalEvent)
 	// }
 	eventSlices := []SignalEvent{}
-	Db.Find(eventSlices, "DATETIME(time) >= DATETIME(?)", dateTime).Order("time desc")
+	Db.Where("time >= ?", dateTime).Order("time desc").Find(&eventSlices)
 
 	sort.Slice(eventSlices, func(i, j int) bool {
 		return eventSlices[i].Time.Before(eventSlices[j].Time)
@@ -126,7 +127,10 @@ func (s *SignalEvents) Buy(ProductCode string, time time.Time, price, size float
 		Size:        size,
 	}
 	if save {
-		signalEvent.Save()
+		result := Db.Create(&signalEvent)
+		if result.Error != nil {
+			fmt.Println(result.Error)
+		}
 	}
 	s.Signals = append(s.Signals, signalEvent)
 	return true
@@ -145,9 +149,14 @@ func (s *SignalEvents) Sell(productCode string, time time.Time, price, size floa
 		Price:       price,
 		Size:        size,
 	}
+
 	if save {
-		signalEvent.Save()
+		result := Db.Create(&signalEvent)
+		if result.Error != nil {
+			fmt.Println(result.Error)
+		}
 	}
+
 	s.Signals = append(s.Signals, signalEvent)
 	return true
 }

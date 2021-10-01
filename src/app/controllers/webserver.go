@@ -26,15 +26,21 @@ func viewChartHandler(w http.ResponseWriter, r *http.Request) {
 	s := models.TradeSetting{}
 	models.Db.First(&s)
 
+	c := config.Config
+	ai := NewAI(c.ProductCode, c.Durations[s.TradeDuration], s.DataLimit, s.UseRate, s.StopLimitRate, s.BackTest)
+	availableCurrency, availableCoin := ai.GetAvailableBalance()
+
 	data := map[string]interface{}{
-		"productCode":   config.Config.ProductCode,
-		"duration":      s.TradeDuration,
-		"limit":         s.DataLimit,
-		"backTest":      s.BackTest,
-		"userRate":      s.UseRate,
-		"dataLimit":     s.DataLimit,
-		"stopLimitRate": s.StopLimitRate,
-		"numRanking":    s.NumRanking,
+		"productCode":       config.Config.ProductCode,
+		"duration":          s.TradeDuration,
+		"limit":             s.DataLimit,
+		"backTest":          s.BackTest,
+		"userRate":          s.UseRate,
+		"dataLimit":         s.DataLimit,
+		"stopLimitRate":     s.StopLimitRate,
+		"numRanking":        s.NumRanking,
+		"availableCurrency": availableCurrency,
+		"availableCoin":     availableCoin,
 	}
 
 	err := templates.ExecuteTemplate(w, "chart.html", data)

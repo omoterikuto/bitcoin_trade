@@ -48,3 +48,6 @@ input[type='number'] {
 .bottom_chart {
   border-bottom: 1px solid #ccc;
 }
+.available-currency {
+  padding: 20px;
+}

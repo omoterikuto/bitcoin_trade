@@ -90,7 +90,7 @@ func GetAllCandle(productCode string, duration time.Duration, limit int) (dfCand
 	tableName := GetCandleTableName(productCode, duration)
 	candles := []Candle{}
 
-	result := Db.Table(tableName).Find(&candles).Order("time desc").Limit(limit)
+	result := Db.Table(tableName).Order("time desc").Limit(limit).Find(&candles)
 
 	if result.Error != nil {
 		return nil, result.Error

@@ -16,7 +16,6 @@ func StreamIngestionData() {
 
 	ai := NewAI(c.ProductCode, c.Durations[s.TradeDuration], s.DataLimit, s.UseRate, s.StopLimitRate, s.BackTest)
 
-	fmt.Println("_____")
 	var tickerChannl = make(chan bitflyer.Ticker)
 	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
 	go apiClient.GetRealTimeTicker(config.Config.ProductCode, tickerChannl)
