@@ -10,24 +10,10 @@ import (
 
 type SignalEvent struct {
 	Time        time.Time `json:"time" gorm:"primaryKey"`
-	ProductCode string    `json:"product_code"`
-	Side        string    `json:"side"`
+	ProductCode string    `json:"product_code" gorm:"type:varchar(191)"`
+	Side        string    `json:"side" gorm:"type:varchar(191)"`
 	Price       float64   `json:"price" gorm:"type:float"`
 	Size        float64   `json:"size"  gorm:"type:float"`
-}
-
-func (s *SignalEvent) Save() bool {
-	// cmd := fmt.Sprintf("INSERT INTO %s (time, product_code, side, price, size) VALUES (?, ?, ?, ?, ?)", tableNameSignalEvents)
-	// _, err := DbConnection.Exec(cmd, s.Time.Format(time.RFC3339), s.ProductCode, s.Side, s.Price, s.Size)
-	Db.Select("*").Create(&s)
-	// if err != nil {
-	// 	if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-	// 		log.Println(err)
-	// 		return true
-	// 	}
-	// 	return false
-	// }
-	return true
 }
 
 type SignalEvents struct {

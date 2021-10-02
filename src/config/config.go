@@ -38,10 +38,9 @@ func init() {
 	}
 
 	durations := map[string]time.Duration{
-		"1m":  time.Minute,
-		"1h":  time.Hour,
-		"1d":  time.Hour * 24,
-		"10d": time.Hour * 24 * 10,
+		"1m": time.Minute,
+		"1h": time.Hour,
+		"1d": time.Hour * 24,
 	}
 
 	Config = ConfigList{

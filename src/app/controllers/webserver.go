@@ -109,18 +109,21 @@ func apiMakeHandler(fn func(http.ResponseWriter, *http.Request)) http.HandlerFun
 }
 
 func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
-	productCode := r.URL.Query().Get("product_code")
+	s := models.TradeSetting{}
+	models.Db.First(&s)
+
+	productCode := config.Config.ProductCode
 	if productCode == "" {
 		APIError(w, "No product_code param", http.StatusBadRequest)
 		return
 	}
-	strLimit := r.URL.Query().Get("limit")
-	limit, err := strconv.Atoi(strLimit)
-	if strLimit == "" || err != nil || limit < 0 || limit > 1000 {
+
+	limit := s.DataLimit
+	if limit < 0 || limit > 1000 {
 		limit = 1000
 	}
 
-	duration := r.URL.Query().Get("duration")
+	duration := s.TradeDuration
 	if duration == "" {
 		duration = "1m"
 	}
@@ -128,7 +131,7 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 
 	df, err := models.GetAllCandle(productCode, durationTime, limit)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	sma := r.URL.Query().Get("sma")
@@ -248,8 +251,7 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	events := r.URL.Query().Get("events")
-	s := models.TradeSetting{}
-	models.Db.First(&s)
+
 	if events != "" {
 		if s.BackTest {
 			df.Events = Ai.SignalEvents.CollectAfter(df.Candles[0].Time)

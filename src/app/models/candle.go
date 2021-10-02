@@ -46,6 +46,8 @@ func GetCandle(productCode string, duration time.Duration, dateTime time.Time) *
 
 	result := Db.Table(tableName).Where("time = ?", dateTime).First(&candle)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil
+	} else if result.Error != nil {
 		fmt.Println(result.Error)
 		return nil
 	}

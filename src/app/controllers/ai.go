@@ -36,9 +36,6 @@ type AI struct {
 	StartTrade           time.Time
 }
 
-// TODO mutex, singleton
-// var Ai *AI
-
 var Ai = &AI{}
 
 func NewAI(productCode string, duration time.Duration, pastPeriod int, UseRate, StopLimitRate float64, backTest bool) *AI {
