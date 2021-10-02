@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"src/app/models"
@@ -38,7 +37,9 @@ type AI struct {
 }
 
 // TODO mutex, singleton
-var Ai *AI
+// var Ai *AI
+
+var Ai = &AI{}
 
 func NewAI(productCode string, duration time.Duration, pastPeriod int, UseRate, StopLimitRate float64, backTest bool) *AI {
 	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
@@ -49,7 +50,6 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UseRate, 
 		signalEvents = models.GetSignalEventsByCount(1)
 	}
 
-	fmt.Println("_________")
 	codes := strings.Split(productCode, "_")
 	Ai = &AI{
 		API:             apiClient,

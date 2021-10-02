@@ -56,7 +56,7 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 		return nil, err
 	}
 	endpoint := baseURL.ResolveReference(apiURL).String()
-	log.Printf("action=doRequest endpoint=%s", endpoint)
+	// log.Printf("action=doRequest endpoint=%s", endpoint)
 	req, err := http.NewRequest(method, endpoint, bytes.NewBuffer(data))
 	if err != nil {
 		log.Printf("%s", err)

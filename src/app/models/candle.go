@@ -44,9 +44,9 @@ func GetCandle(productCode string, duration time.Duration, dateTime time.Time) *
 
 	candle := Candle{}
 
-	err := Db.Table(tableName).Where("time = ?", dateTime).First(&candle).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		fmt.Println(err)
+	result := Db.Table(tableName).Where("time = ?", dateTime).First(&candle)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		fmt.Println(result.Error)
 		return nil
 	}
 
