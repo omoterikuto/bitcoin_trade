@@ -18,13 +18,40 @@ func StartWebServer() error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("app/resources/"))))
 	http.HandleFunc("/api/candle/", apiMakeHandler(apiCandleHandler))
 	http.HandleFunc("/chart/", viewChartHandler)
-	http.HandleFunc("/setting/", settingSaveHandler)
 	return http.ListenAndServe(fmt.Sprintf(":%d", config.Config.WebPort), nil)
 }
 
 func viewChartHandler(w http.ResponseWriter, r *http.Request) {
 	s := models.TradeSetting{}
 	models.Db.First(&s)
+
+	if r.Method == http.MethodPost {
+		var err error
+
+		s.TradeDuration = r.FormValue("tradeDuration")
+		s.BackTest, err = strconv.ParseBool(r.FormValue("backTest"))
+		if err != nil {
+			fmt.Println("parse error:", err)
+		}
+		s.UseRate, err = strconv.ParseFloat(r.FormValue("useRate"), 64)
+		if err != nil {
+			fmt.Println("parse error:", err)
+		}
+		s.DataLimit, err = strconv.Atoi(r.FormValue("dataLimit"))
+		if err != nil {
+			fmt.Println("parse error:", err)
+		}
+		s.StopLimitRate, err = strconv.ParseFloat(r.FormValue("stopLimitRate"), 64)
+		if err != nil {
+			fmt.Println("parse error:", err)
+		}
+		s.NumRanking, err = strconv.Atoi(r.FormValue("numRanking"))
+		if err != nil {
+			fmt.Println("parse error:", err)
+		}
+
+		models.Db.Save(&s)
+	}
 
 	c := config.Config
 	ai := NewAI(c.ProductCode, c.Durations[s.TradeDuration], s.DataLimit, s.UseRate, s.StopLimitRate, s.BackTest)
@@ -47,38 +74,6 @@ func viewChartHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-}
-
-func settingSaveHandler(w http.ResponseWriter, r *http.Request) {
-	s := models.TradeSetting{}
-	models.Db.First(&s)
-	var err error
-
-	s.TradeDuration = r.FormValue("tradeDuration")
-	s.BackTest, err = strconv.ParseBool(r.FormValue("backTest"))
-	if err != nil {
-		fmt.Println("parse error:", err)
-	}
-	s.UseRate, err = strconv.ParseFloat(r.FormValue("useRate"), 64)
-	if err != nil {
-		fmt.Println("parse error:", err)
-	}
-	s.DataLimit, err = strconv.Atoi(r.FormValue("dataLimit"))
-	if err != nil {
-		fmt.Println("parse error:", err)
-	}
-	s.StopLimitRate, err = strconv.ParseFloat(r.FormValue("stopLimitRate"), 64)
-	if err != nil {
-		fmt.Println("parse error:", err)
-	}
-	s.NumRanking, err = strconv.Atoi(r.FormValue("numRanking"))
-	if err != nil {
-		fmt.Println("parse error:", err)
-	}
-
-	models.Db.Save(&s)
-
-	viewChartHandler(w, r)
 }
 
 type JSONError struct {

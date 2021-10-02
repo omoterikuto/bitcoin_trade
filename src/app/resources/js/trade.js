@@ -239,18 +239,13 @@ function drawChart(dataTable) {
 
     dashboard.bind(controlWrapper, charts);
     dashboard.draw(dataTable);
-
 }
 
 function send () {
     if (config.api.enable == false){
         return
     }
-    var params = {
-        "product_code": config.candlestick.product_code,
-        "limit": config.candlestick.limit,
-        "duration": config.candlestick.duration,
-    }
+    var params = {}
 
     if (config.sma.enable == true) {
         params["sma"] = true;
@@ -286,7 +281,6 @@ function send () {
         params["macdPeriod1"] = config.macd.periods[0];
         params["macdPeriod2"] = config.macd.periods[1];
         params["macdPeriod3"] = config.macd.periods[2];
-        console.log(params)
     }
 
     if (config.hv.enable == true) {
@@ -586,11 +580,6 @@ function send () {
     })
 }
 
-// function changeDuration(s){
-// config.candlestick.duration = s;
-// send();
-// }
-
 setInterval(send, 1000 * 3)
 window.onload = function () {
     send()
@@ -714,7 +703,6 @@ window.onload = function () {
         config.macd.periods[2] = this.value;
         send();
     });
-
     $('#inputHv').change(function() {
         if (this.checked === true) {
             config.hv.enable = true;

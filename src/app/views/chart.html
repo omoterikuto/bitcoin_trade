@@ -5,90 +5,12 @@
     <title>Chart</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <script type="text/javascript" src="/static/js/trade.js"></script>
+    <script type="text/javascript" src="/static/js/config.js"></script>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart', 'controls']});
-
-        var config = {
-            api:{
-                enable: true,
-                interval: 1000 * 3
-            },
-            candlestick:{
-                product_code: {{ .productCode }},
-                duration: {{ .duration }},
-                limit: {{ .limit }},
-                numViews: 5,
-            },
-            dataTable: {
-                index : 0,
-                value: null
-            },
-            sma: {
-                enable: false,
-                indexes: [],
-                periods: [],
-                values: []
-            },
-            ema: {
-                enable: false,
-                indexes: [],
-                periods: [],
-                values: []
-            },
-            bbands: {
-                enable: false,
-                indexes: [],
-                n: 20,
-                k: 2,
-                up: [],
-                mid: [],
-                down: []
-            },
-            ichimoku: {
-                enable: false,
-                indexes: [],
-                tenkan: [],
-                kijun: [],
-                senkouA : [],
-                senkouB: [],
-                chikou: []
-            },
-            volume: {
-                enable: false,
-                index: [],
-                values: []
-            },
-            rsi: {
-                enable: false,
-                indexes: {'up': 0, 'value': 0, 'down': 0},
-                period: 14,
-                up: 70,
-                values: [],
-                down: 30
-            },
-            macd: {
-                enable: false,
-                indexes: [],
-                periods: [],
-                values: []
-            },
-            hv: {
-                enable: false,
-                indexes: [],
-                periods: [],
-                values: []
-            },
-            events: {
-                enable: false,
-                indexes: [],
-                values: [],
-                first: null
-            }
-        }
-
     </script>
 </head>
 <body>
@@ -147,7 +69,7 @@
       </div>
       </div>
       <div>
-        <form action="/setting" method="PATCH" class="setting-form">
+        <form method="POST" class="setting-form">
           <h3 class="setting-title">トレード設定</h3>
           <div class="form-item">
             <label for="trade_duration">トレード期間</label>
@@ -155,7 +77,6 @@
               <option value="1m" {{ if eq .duration "1m" }} selected {{ end }}>1分</option>
               <option value="1h" {{ if eq .duration "1h" }} selected {{ end }}>1時間</option>
               <option value="1d" {{ if eq .duration "1d" }} selected {{ end }}>1日</option>
-              <option value="10d" {{ if eq .duration "10d" }} selected {{ end }}>10日</option>
             </select>
           </div>
           <div class="form-item">
