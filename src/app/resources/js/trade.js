@@ -62,21 +62,21 @@ function drawChart(dataTable) {
     var options = mainChart.getOptions();
     var view = mainChart.getView();
 
-    if (config.sma.enable == true) {
+    if ($("#inputSma").prop('checked')) {
         for (i = 0; i < config.sma.indexes.length; i++) {
             options.series[config.sma.indexes[i]] = {type: 'line'};
             view.columns.push(config.candlestick.numViews + config.sma.indexes[i]);
         }
     }
 
-    if (config.ema.enable == true) {
+    if ($("#inputEma").prop('checked')) {
         for (i = 0; i < config.ema.indexes.length; i++) {
             options.series[config.ema.indexes[i]] = {type: 'line'};
             view.columns.push(config.candlestick.numViews + config.ema.indexes[i]);
         }
     }
 
-    if (config.bbands.enable == true) {
+    if ($("#inputBBands").prop('checked')) {
         for (i = 0; i < config.bbands.indexes.length; i++) {
             options.series[config.bbands.indexes[i]] = {
                 type: 'line',
@@ -87,7 +87,7 @@ function drawChart(dataTable) {
         }
     }
 
-    if (config.ichimoku.enable == true) {
+    if ($("#inputIchimoku").prop('checked')) {
         for (i = 0; i < config.ichimoku.indexes.length; i++) {
             options.series[config.ichimoku.indexes[i]] = {
                 type: 'line',
@@ -97,7 +97,7 @@ function drawChart(dataTable) {
         }
     }
 
-    if (config.events.enable == true && config.events.indexes.length > 0){
+    if ($("#inputEvents").prop('checked') && config.events.indexes.length > 0){
         options.series[config.events.indexes[0]] = {
             'type': 'line',
             tooltip: 'none',
@@ -108,7 +108,7 @@ function drawChart(dataTable) {
         view.columns.push(config.candlestick.numViews + config.events.indexes[1]);
     }
 
-    if (config.volume.enable == true) {
+    if ($("#inputVolume").prop('checked')) {
         if ($('#volume_div').length == 0) {
             $('#technical_div').append(
                     "<div id='volume_div' class='bottom_chart'>" +
@@ -131,7 +131,7 @@ function drawChart(dataTable) {
         charts.push(volumeChart)
     }
 
-    if (config.rsi.enable == true) {
+    if ($("#inputRsi").prop('checked')) {
         if ($('#rsi_div').length == 0) {
             $('#technical_div').append(
                     "<div id='rsi_div' class='bottom_chart'>" +
@@ -161,7 +161,7 @@ function drawChart(dataTable) {
         charts.push(rsiChart)
     }
 
-    if (config.macd.enable == true) {
+    if ($("#inputMacd").prop('checked')) {
         if (config.macd.indexes.length == 0) { return }
         if ($('#macd_div').length == 0) {
             $('#technical_div').append(
@@ -193,7 +193,7 @@ function drawChart(dataTable) {
         charts.push(macdChart)
     }
 
-    if (config.hv.enable == true) {
+    if ($("#inputHv").prop('checked')) {
         if (config.hv.indexes.length == 0) { return }
         if ($('#hv_div').length == 0) {
             $('#technical_div').append(
@@ -242,58 +242,56 @@ function drawChart(dataTable) {
 }
 
 function send () {
-    if (config.api.enable == false){
-        return
-    }
     var params = {}
 
-    if (config.sma.enable == true) {
-        params["sma"] = true;
-        params["smaPeriod1"] = config.sma.periods[0];
-        params["smaPeriod2"] = config.sma.periods[1];
-        params["smaPeriod3"] = config.sma.periods[2];
+    if ($("#inputSma").prop('checked')) {
+        params["sma"] = true
+        params["smaPeriod1"] = $("#inputSmaPeriod1").val();
+        params["smaPeriod2"] = $("#inputSmaPeriod2").val();
+        params["smaPeriod3"] = $("#inputSmaPeriod3").val();
     }
 
-    if (config.ema.enable == true) {
-        params["ema"] = true;
-        params["emaPeriod1"] = config.ema.periods[0];
-        params["emaPeriod2"] = config.ema.periods[1];
-        params["emaPeriod3"] = config.ema.periods[2];
+    if ($("#inputEma").prop('checked')) {
+        params["ema"] = true
+        params["emaPeriod1"] = $("#inputEmaPeriod1").val();
+        params["emaPeriod2"] = $("#inputEmaPeriod2").val();
+        params["emaPeriod3"] = $("#inputEmaPeriod3").val();
     }
 
-    if (config.bbands.enable == true) {
-        params["bbands"] = true;
-        params["bbandsN"] = config.bbands.n;
-        params["bbandsK"] = config.bbands.k;
+    if ($("#inputBBands").prop('checked')) {
+        params["bbands"] = true
+        params["bbandsN"] = $("#inputBBandsN").val();
+        params["bbandsK"] = $("#inputBBandsK").val();
     }
 
-    if (config.ichimoku.enable == true) {
+    if ($("#inputIchimoku").prop('checked')) {
         params["ichimoku"] = true;
     }
 
-    if (config.rsi.enable == true) {
+    if ($("#inputRsi").prop('checked')) {
         params["rsi"] = true;
-        params["rsiPeriod"] = config.rsi.period;
+        params["rsiPeriod"] = $("#inputRsiPeriod").val();
     }
 
-    if (config.macd.enable == true) {
+    if ($("#inputMacd").prop('checked')) {
         params["macd"] = true;
-        params["macdPeriod1"] = config.macd.periods[0];
-        params["macdPeriod2"] = config.macd.periods[1];
-        params["macdPeriod3"] = config.macd.periods[2];
+        params["macdPeriod1"] = $("#inputMacdPeriod1").val();
+        params["macdPeriod2"] = $("#inputMacdPeriod2").val();
+        params["macdPeriod3"] = $("#inputMacdPeriod3").val();
     }
 
-    if (config.hv.enable == true) {
+    if ($("#inputHv").prop('checked')) {
         params["hv"] = true;
-        params["hvPeriod1"] = config.hv.periods[0];
-        params["hvPeriod2"] = config.hv.periods[1];
-        params["hvPeriod3"] = config.hv.periods[2];
+        params["hvPeriod1"] = $("#inputHvPeriod1").val();
+        params["hvPeriod2"] = $("#inputHvPeriod2").val();
+        params["hvPeriod3"] = $("#inputHvPeriod3").val();
     }
 
-    if (config.events.enable == true) {
+    if ($("#inputEvents").prop('checked')) {
         params["events"] = true;
     }
-
+    
+    console.log(params)
     $.get("/api/candle/", params).done(function (data) {
         initConfigValues();
         var dataTable = new google.visualization.DataTable();
@@ -580,158 +578,38 @@ function send () {
     })
 }
 
-setInterval(send, 1000 * 3)
+setInterval(send, 1000 * 60)
 window.onload = function () {
     send()
 
-    $('#dashboard_div').mouseenter(function() {
-        config.api.enable = false;
-    }).mouseleave(function() {
-        config.api.enable = true;
-    });
-
-    $('#inputSma').change(function() {
-        if (this.checked === true) {
-            config.sma.enable = true;
-        } else {
-            config.sma.enable = false;
-        }
+    $("#indicator input").change(function() {
         send();
     });
-    $("#inputSmaPeriod1").change(function() {
-        config.sma.periods[0] = this.value;
-        send();
-    });
-    $("#inputSmaPeriod2").change(function() {
-        config.sma.periods[1] = this.value;
-        send();
-    });
-    $("#inputSmaPeriod3").change(function() {
-        config.sma.periods[2] = this.value;
-        send();
-    });
-
-    $('#inputEma').change(function() {
-        if (this.checked === true) {
-            config.ema.enable = true;
-        } else {
-            config.ema.enable = false;
-        }
-        send();
-    });
-    $("#inputEmaPeriod1").change(function() {
-        config.ema.periods[0] = this.value;
-        send();
-    });
-    $("#inputEmaPeriod2").change(function() {
-        config.ema.periods[1] = this.value;
-        send();
-    });
-    $("#inputEmaPeriod3").change(function() {
-        config.ema.periods[2] = this.value;
-        send();
-    });
-
-    $('#inputBBands').change(function() {
-        if (this.checked === true) {
-            config.bbands.enable = true;
-        } else {
-            config.bbands.enable = false;
-        }
-        send();
-    });
-    $("#inputBBandsN").change(function() {
-        config.bbands.n = this.value;
-        send();
-    });
-    $("#inputBBandsK").change(function() {
-        config.bbands.k = this.value;
-        send();
-    });
-
-    $('#inputIchimoku').change(function() {
-        if (this.checked === true) {
-            config.ichimoku.enable = true;
-        } else {
-            config.ichimoku.enable = false;
-        }
-        send();
-    });
-
     $('#inputVolume').change(function() {
-        if (this.checked === true) {
-            config.volume.enable = true;
+        if (this.checked) {
             drawChart(config.dataTable.value);
         } else {
-            config.volume.enable = false;
             $('#volume_div').remove();
         }
     });
-
     $('#inputRsi').change(function() {
-        if (this.checked === true) {
-            config.rsi.enable = true;
-        } else {
-            config.rsi.enable = false;
+        if (!this.checked) {
             $('#rsi_div').remove();
         }
-        send();
     });
-    $("#inputRsiPeriod").change(function() {
-        config.rsi.period = this.value;
-        send();
-    });
-
     $('#inputMacd').change(function() {
-        if (this.checked === true) {
-            config.macd.enable = true;
-        } else {
+        if (!this.checked) {
             $('#macd_div').remove();
-            config.macd.enable = false;
         }
-        send();
-    });
-    $("#inputMacdPeriod1").change(function() {
-        config.macd.periods[0] = this.value;
-        send();
-    });
-    $("#inputMacdPeriod2").change(function() {
-        config.macd.periods[1] = this.value;
-        send();
-    });
-    $("#inputMacdPeriod3").change(function() {
-        config.macd.periods[2] = this.value;
-        send();
     });
     $('#inputHv').change(function() {
-        if (this.checked === true) {
-            config.hv.enable = true;
-        } else {
+        if (!this.checked) {
             $('#hv_div').remove();
-            config.hv.enable = false;
         }
-        send();
     });
-    $("#inputHvPeriod1").change(function() {
-        config.hv.periods[0] = this.value;
-        send();
-    });
-    $("#inputHvPeriod2").change(function() {
-        config.hv.periods[1] = this.value;
-        send();
-    });
-    $("#inputHvPeriod3").change(function() {
-        config.hv.periods[2] = this.value;
-        send();
-    });
-
     $('#inputEvents').change(function() {
-        if (this.checked === true) {
-            config.events.enable = true;
-        } else {
-            config.events.enable = false;
+        if (!this.checked) {
             $('#profit').html("");
         }
-        send();
     });
 }
