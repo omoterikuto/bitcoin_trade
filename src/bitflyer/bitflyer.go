@@ -59,7 +59,7 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 	log.Printf("action=doRequest endpoint=%s", endpoint)
 	req, err := http.NewRequest(method, endpoint, bytes.NewBuffer(data))
 	if err != nil {
-		log.Printf("%s", err)
+		log.Printf("new request error: %s", err)
 		return nil, err
 	}
 	q := req.URL.Query()
@@ -92,7 +92,6 @@ type Balance struct {
 func (api *APIClient) GetBalance() ([]Balance, error) {
 	url := "me/getbalance"
 	resp, err := api.doRequest("GET", url, map[string]string{}, nil)
-	log.Printf("url=%s resp=%s", url, string(resp))
 	if err != nil {
 		log.Printf("action=GetBalance err=%s", err.Error())
 		return nil, err
@@ -175,7 +174,7 @@ OUTER:
 	for {
 		message := new(JsonRPC2)
 		if err := c.ReadJSON(message); err != nil {
-			log.Println("read:", err)
+			log.Println("read json error:", err)
 			return
 		}
 

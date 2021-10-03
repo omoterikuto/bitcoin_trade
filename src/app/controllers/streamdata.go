@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"src/app/models"
 	"src/bitflyer"
 	"src/config"
@@ -19,7 +18,6 @@ func StreamIngestionData() {
 	go apiClient.GetRealTimeTicker(config.Config.ProductCode, tickerChannl)
 	go func() {
 		for ticker := range tickerChannl {
-			log.Printf("action=StreamIngestionData, %v", ticker)
 			for _, duration := range c.Durations {
 				isCreated := models.CreateCandleWithDuration(ticker, ticker.ProductCode, duration)
 				if isCreated && duration == c.Durations[s.TradeDuration] {

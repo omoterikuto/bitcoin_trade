@@ -70,34 +70,36 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UseRate, 
 func (ai *AI) UpdateOptimizeParams(isContinue bool) {
 	df, _ := models.GetAllCandle(ai.ProductCode, ai.Duration, ai.PastPeriod)
 	ai.OptimizedTradeParams = df.OptimizeParams()
-	// log.Printf("optimized_trade_params=%+v", ai.OptimizedTradeParams)
+	log.Printf("optimized_trade_params=%+v", ai.OptimizedTradeParams)
 	if ai.OptimizedTradeParams == nil && isContinue && !ai.BackTest {
-		log.Print("status_no_params")
+		log.Println("status_no_params")
 		time.Sleep(10 * ai.Duration)
 		ai.UpdateOptimizeParams(isContinue)
 	}
 }
 
-func (ai *AI) Buy(candle models.Candle) (childOrderAcceptanceID string, isOrderCompleted bool) {
+func (ai *AI) Buy(candle models.Candle) (childOrderAcceptanceID string, isOrderCompleted bool, err error) {
 	if ai.BackTest {
 		couldBuy := ai.SignalEvents.Buy(ai.ProductCode, candle.Time, candle.Close, 1.0, false)
-		return "", couldBuy
+		return "", couldBuy, nil
 	}
 
 	if ai.StartTrade.After(candle.Time) {
-		return
+		return "", false, nil
 	}
 
 	if !ai.SignalEvents.CanBuy(candle.Time) {
-		return
+		log.Println("cannot buy")
+		return "", false, nil
 	}
 
 	availableCurrency, _ := ai.GetAvailableBalance()
 	useCurrency := availableCurrency * ai.UseRate
 	ticker, err := ai.API.GetTicker(ai.ProductCode)
 	if err != nil {
-		return
+		return "", false, err
 	}
+	log.Println("Buy through after and canbuy")
 	size := 1 / (ticker.BestAsk / useCurrency)
 	size = ai.AdjustSize(size)
 
@@ -123,7 +125,7 @@ func (ai *AI) Buy(candle models.Candle) (childOrderAcceptanceID string, isOrderC
 	}
 
 	isOrderCompleted = ai.WaitUntilOrderComplete(childOrderAcceptanceID, candle.Time)
-	return childOrderAcceptanceID, isOrderCompleted
+	return childOrderAcceptanceID, isOrderCompleted, nil
 }
 
 func (ai *AI) Sell(candle models.Candle) (childOrderAcceptanceID string, isOrderCompleted bool) {
@@ -153,7 +155,7 @@ func (ai *AI) Sell(candle models.Candle) (childOrderAcceptanceID string, isOrder
 	log.Printf("status=sell candle=%+v order=%+v", candle, order)
 	resp, err := ai.API.SendOrder(order)
 	if err != nil {
-		log.Println(err)
+		log.Println("send order error: ", err)
 		return
 	}
 	if resp.ChildOrderAcceptanceID == "" {
@@ -265,7 +267,10 @@ func (ai *AI) Trade() {
 		}
 
 		if buyPoint > 0 {
-			_, isOrderCompleted := ai.Buy(df.Candles[i])
+			_, isOrderCompleted, err := ai.Buy(df.Candles[i])
+			if err != nil {
+				log.Panicln("buy err: ", err)
+			}
 			if !isOrderCompleted {
 				continue
 			}

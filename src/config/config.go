@@ -2,7 +2,6 @@ package config
 
 import (
 	"log"
-	"os"
 	"time"
 
 	"gopkg.in/ini.v1"
@@ -33,8 +32,7 @@ func init() {
 
 	cfg, err := ini.Load("config.ini")
 	if err != nil {
-		log.Printf("Failed to read file: %v", err)
-		os.Exit(1)
+		log.Fatal("Failed to read file: ", err)
 	}
 
 	durations := map[string]time.Duration{

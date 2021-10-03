@@ -31,23 +31,23 @@ func viewChartHandler(w http.ResponseWriter, r *http.Request) {
 		s.TradeDuration = r.FormValue("tradeDuration")
 		s.BackTest, err = strconv.ParseBool(r.FormValue("backTest"))
 		if err != nil {
-			fmt.Println("parse error:", err)
+			log.Println("parse error of backTest: ", err)
 		}
 		s.UseRate, err = strconv.ParseFloat(r.FormValue("useRate"), 64)
 		if err != nil {
-			fmt.Println("parse error:", err)
+			log.Println("parse error of useRate: ", err)
 		}
 		s.DataLimit, err = strconv.Atoi(r.FormValue("dataLimit"))
 		if err != nil {
-			fmt.Println("parse error:", err)
+			log.Println("parse error of dataLimit: ", err)
 		}
 		s.StopLimitRate, err = strconv.ParseFloat(r.FormValue("stopLimitRate"), 64)
 		if err != nil {
-			fmt.Println("parse error:", err)
+			log.Println("parse error of stopLimitRate: ", err)
 		}
 		s.NumRanking, err = strconv.Atoi(r.FormValue("numRanking"))
 		if err != nil {
-			fmt.Println("parse error:", err)
+			log.Println("parse error of numRanking: ", err)
 		}
 
 		models.Db.Save(&s)

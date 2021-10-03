@@ -2,7 +2,7 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"sort"
 	"src/config"
 	"time"
@@ -115,7 +115,7 @@ func (s *SignalEvents) Buy(ProductCode string, time time.Time, price, size float
 	if save {
 		result := Db.Create(&signalEvent)
 		if result.Error != nil {
-			fmt.Println(result.Error)
+			log.Println("insert signalEvent error", result.Error)
 		}
 	}
 	s.Signals = append(s.Signals, signalEvent)
@@ -139,7 +139,7 @@ func (s *SignalEvents) Sell(productCode string, time time.Time, price, size floa
 	if save {
 		result := Db.Create(&signalEvent)
 		if result.Error != nil {
-			fmt.Println(result.Error)
+			log.Println("insert signalEvent error", result.Error)
 		}
 	}
 

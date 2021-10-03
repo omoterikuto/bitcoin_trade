@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"log"
 	"src/config"
 	"time"
 
@@ -30,12 +31,14 @@ func init() {
 	var err error
 	Db, err = sqlConnect()
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal("sql connect error", err)
+	} else {
+		log.Println("success to connect to database!")
 	}
 
 	err = migrate()
 	if err != nil {
-		fmt.Println(err)
+		log.Println("migrate error", err)
 	}
 }
 
@@ -55,11 +58,10 @@ func sqlConnect() (sqlDb *gorm.DB, err error) {
 			if err == nil {
 				break
 			}
-			fmt.Print(".")
+			log.Print(".")
 			time.Sleep(time.Second)
 			count++
 			if count > 20 {
-				fmt.Println("DB接続失敗")
 				return nil, err
 			}
 			db, err = gorm.Open(mysql.New(mysql.Config{
@@ -68,8 +70,6 @@ func sqlConnect() (sqlDb *gorm.DB, err error) {
 			}), &gorm.Config{})
 		}
 	}
-
-	fmt.Println("DB接続成功")
 
 	return db, err
 }

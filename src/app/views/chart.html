@@ -81,6 +81,8 @@
           </div>
           <div class="form-item">
             <label for="back_test">バックテスト</label>
+            <!-- 未チェック時にfalseを送信する為 -->
+            <input name="backTest" type="hidden" value="false" />
             <input id="back_test" type="checkbox" name="backTest" {{ if .backTest }} checked {{ end }} value="true">
           </div>
           <div class="form-item">

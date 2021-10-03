@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"sort"
 	"src/bitflyer"
 	"src/config"
@@ -48,7 +48,7 @@ func GetCandle(productCode string, duration time.Duration, dateTime time.Time) *
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil
 	} else if result.Error != nil {
-		fmt.Println(result.Error)
+		log.Println("select candle error", result.Error)
 		return nil
 	}
 
