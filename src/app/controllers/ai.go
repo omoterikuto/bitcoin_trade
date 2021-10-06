@@ -99,7 +99,6 @@ func (ai *AI) Buy(candle models.Candle) (childOrderAcceptanceID string, isOrderC
 	if err != nil {
 		return "", false, err
 	}
-	log.Println("Buy through after and canbuy")
 	size := 1 / (ticker.BestAsk / useCurrency)
 	size = ai.AdjustSize(size)
 
@@ -114,14 +113,13 @@ func (ai *AI) Buy(candle models.Candle) (childOrderAcceptanceID string, isOrderC
 	log.Printf("status=order candle=%+v order=%+v", candle, order)
 	resp, err := ai.API.SendOrder(order)
 	if err != nil {
-		log.Println(err)
-		return
+		return "", false, err
 	}
 	childOrderAcceptanceID = resp.ChildOrderAcceptanceID
 	if resp.ChildOrderAcceptanceID == "" {
 		// Insufficient fund
 		log.Printf("order=%+v status=no_id", order)
-		return
+		return "", false, err
 	}
 
 	isOrderCompleted = ai.WaitUntilOrderComplete(childOrderAcceptanceID, candle.Time)
