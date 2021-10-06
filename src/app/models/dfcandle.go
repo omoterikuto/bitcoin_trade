@@ -477,9 +477,10 @@ func (df *DataFrameCandle) OptimizeParams() *TradeParams {
 	sort.Slice(rankings, func(i, j int) bool { return rankings[i].Performance > rankings[j].Performance })
 
 	isEnable := false
+	s := TradeSetting{}
+	Db.First(&s)
 	for i, ranking := range rankings {
-		if i >= 3 {
-			// if i >= config.Config.NumRanking {
+		if i >= s.NumRanking {
 			break
 		}
 		if ranking.Performance > 0 {

@@ -107,7 +107,7 @@ func (api *APIClient) GetBalance() ([]Balance, error) {
 
 type Ticker struct {
 	ProductCode     string  `json:"product_code"`
-	Timestamp       string  `json:"timestamp"` // format: 2006-01-02T15:04:05+09:00
+	Timestamp       string  `json:"timestamp"` //format: 2006-01-02T15:04:05+09:00
 	TickID          int     `json:"tick_id"`
 	BestBid         float64 `json:"best_bid"`
 	BestAsk         float64 `json:"best_ask"`

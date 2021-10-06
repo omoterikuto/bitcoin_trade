@@ -169,7 +169,7 @@ func (ai *AI) Sell(candle models.Candle) (childOrderAcceptanceID string, isOrder
 func (ai *AI) Trade() {
 	isAcquire := ai.TradeSemaphore.TryAcquire(1)
 	if !isAcquire {
-		log.Println("Could not get trade lock")
+		log.Println("error: Could not get trade lock")
 		return
 	}
 	defer ai.TradeSemaphore.Release(1)

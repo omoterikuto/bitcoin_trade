@@ -26,3 +26,8 @@
 - ログイン、ユーザー機能
 - bitflyer以外のAPI使用できるように
 - 売り買いしたらemail通知
+
+### 工夫点
+- MarshallJSON実装
+- DateFrameの実装
+- バックテストの実装
