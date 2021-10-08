@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"src/app/models"
 	"src/bitflyer"
 	"src/config"
@@ -10,6 +11,7 @@ func StreamIngestionData() {
 	c := config.Config
 	s := models.TradeSetting{}
 	models.Db.First(&s)
+	fmt.Println(s)
 
 	ai := NewAI(c.ProductCode, c.Durations[s.TradeDuration], s.DataLimit, s.UseRate, s.StopLimitRate, s.BackTest)
 

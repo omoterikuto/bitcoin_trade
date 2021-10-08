@@ -74,6 +74,7 @@
           <div class="form-item">
             <label for="trade_duration">トレード期間</label>
             <select id="trade_duration" name="tradeDuration">
+              <option value="1s" {{ if eq .duration "1s" }} selected {{ end }}>1秒</option>
               <option value="1m" {{ if eq .duration "1m" }} selected {{ end }}>1分</option>
               <option value="1h" {{ if eq .duration "1h" }} selected {{ end }}>1時間</option>
               <option value="1d" {{ if eq .duration "1d" }} selected {{ end }}>1日</option>

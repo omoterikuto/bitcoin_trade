@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"src/app/models"
@@ -47,6 +48,7 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UseRate, 
 		signalEvents = models.GetSignalEventsByCount(1)
 	}
 
+	fmt.Println("_________")
 	codes := strings.Split(productCode, "_")
 	Ai = &AI{
 		API:             apiClient,

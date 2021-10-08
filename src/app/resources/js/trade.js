@@ -578,7 +578,7 @@ function send () {
     })
 }
 
-setInterval(send, 1000 * 60)
+setInterval(send, 1000)
 window.onload = function () {
     send()
 
