@@ -68,6 +68,7 @@ func viewChartHandler(w http.ResponseWriter, r *http.Request) {
 		"numRanking":        s.NumRanking,
 		"availableCurrency": availableCurrency,
 		"availableCoin":     availableCoin,
+		"appUrl":            fmt.Sprintf("%s:%d", c.BaseUrl, c.WebPort),
 	}
 
 	err := templates.ExecuteTemplate(w, "chart.html", data)

@@ -10,6 +10,7 @@ import (
 type ConfigList struct {
 	LogFile     string
 	ProductCode string
+	BaseUrl     string
 	Durations   map[string]time.Duration
 
 	DbName      string
@@ -45,6 +46,7 @@ func init() {
 	Config = ConfigList{
 		LogFile:     cfg.Section("btc_trade").Key("log_file").String(),
 		ProductCode: cfg.Section("btc_trade").Key("product_code").String(),
+		BaseUrl:     cfg.Section("btc_trade").Key("base_url").String(),
 		Durations:   durations,
 
 		DbName:      cfg.Section("db").Key("name").String(),

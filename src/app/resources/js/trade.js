@@ -1,3 +1,7 @@
+function getById(id) {
+    return document.getElementById(id)
+}
+
 function initConfigValues(){
     config.dataTable.index = 0;
     config.sma.indexes = [];
@@ -27,7 +31,7 @@ function initConfigValues(){
 }
 
 function drawChart(dataTable) {
-    var chartDiv = document.getElementById('chart_div');
+    var chartDiv = chart_div;
     var charts = [];
     var dashboard = new google.visualization.Dashboard(chartDiv);
     var mainChart = new google.visualization.ChartWrapper({
@@ -40,7 +44,7 @@ function drawChart(dataTable) {
                 fallingColor: { strokeWidth: 0, fill: '#a52714' },
                 risingColor: { strokeWidth: 0, fill: '#0f9d58' }
             },
-            seriesType: "candlesticks",
+            seriesType: 'candlesticks',
             series: {}
         },
         view: {
@@ -62,21 +66,21 @@ function drawChart(dataTable) {
     var options = mainChart.getOptions();
     var view = mainChart.getView();
 
-    if ($("#inputSma").prop('checked')) {
+    if (getById('inputSma').checked) {
         for (i = 0; i < config.sma.indexes.length; i++) {
             options.series[config.sma.indexes[i]] = {type: 'line'};
             view.columns.push(config.candlestick.numViews + config.sma.indexes[i]);
         }
     }
 
-    if ($("#inputEma").prop('checked')) {
+    if (getById('inputEma').checked) {
         for (i = 0; i < config.ema.indexes.length; i++) {
             options.series[config.ema.indexes[i]] = {type: 'line'};
             view.columns.push(config.candlestick.numViews + config.ema.indexes[i]);
         }
     }
 
-    if ($("#inputBBands").prop('checked')) {
+    if (getById('inputBBands').checked) {
         for (i = 0; i < config.bbands.indexes.length; i++) {
             options.series[config.bbands.indexes[i]] = {
                 type: 'line',
@@ -87,7 +91,7 @@ function drawChart(dataTable) {
         }
     }
 
-    if ($("#inputIchimoku").prop('checked')) {
+    if (getById('inputIchimoku').checked) {
         for (i = 0; i < config.ichimoku.indexes.length; i++) {
             options.series[config.ichimoku.indexes[i]] = {
                 type: 'line',
@@ -97,7 +101,7 @@ function drawChart(dataTable) {
         }
     }
 
-    if ($("#inputEvents").prop('checked') && config.events.indexes.length > 0){
+    if (getById('inputEvents').checked && config.events.indexes.length > 0){
         options.series[config.events.indexes[0]] = {
             'type': 'line',
             tooltip: 'none',
@@ -108,13 +112,12 @@ function drawChart(dataTable) {
         view.columns.push(config.candlestick.numViews + config.events.indexes[1]);
     }
 
-    if ($("#inputVolume").prop('checked')) {
-        if ($('#volume_div').length == 0) {
-            $('#technical_div').append(
-                    "<div id='volume_div' class='bottom_chart'>" +
+    if (getById('inputVolume').checked) {
+        if (getById('volume_div') === null) {
+            getById('technical_div').insertAdjacentHTML('beforebegin', "<div id='volume_div' class='bottom_chart'>" +
                     "<span class='technical_title'>Volume</span>" +
                     "<div id='volume_chart'></div>" +
-                    "</div>")
+                    "</div>");
         }
         var volumeChart = new google.visualization.ChartWrapper({
             'chartType': 'ColumnChart',
@@ -131,9 +134,9 @@ function drawChart(dataTable) {
         charts.push(volumeChart)
     }
 
-    if ($("#inputRsi").prop('checked')) {
-        if ($('#rsi_div').length == 0) {
-            $('#technical_div').append(
+    if (getById('inputRsi').checked) {
+        if (getById('rsi_div') === null) {
+            getById('technical_div').insertAdjacentHTML('beforebegin',
                     "<div id='rsi_div' class='bottom_chart'>" +
                     "<span class='technical_title'>RSI</span>" +
                     "<div id='rsi_chart'></div>" +
@@ -161,10 +164,10 @@ function drawChart(dataTable) {
         charts.push(rsiChart)
     }
 
-    if ($("#inputMacd").prop('checked')) {
+    if (getById('inputMacd').checked) {
         if (config.macd.indexes.length == 0) { return }
-        if ($('#macd_div').length == 0) {
-            $('#technical_div').append(
+        if (getById('macd_div')  === null) {
+            getById('technical_div').insertAdjacentHTML('beforebegin',
                     "<div id='macd_div'>" +
                     "<span class='technical_title'>MACD</span>" +
                     "<div id='macd_chart'></div>" +
@@ -180,7 +183,7 @@ function drawChart(dataTable) {
             'containerId': 'macd_chart',
             'options': {
                 legend: {'position': 'none'},
-                seriesType: "bars",
+                seriesType: 'bars',
                 series: {
                     1: {type: 'line', lineWidth: 1},
                     2: {type: 'line', lineWidth: 1}
@@ -193,10 +196,10 @@ function drawChart(dataTable) {
         charts.push(macdChart)
     }
 
-    if ($("#inputHv").prop('checked')) {
+    if (getById('inputHv').checked) {
         if (config.hv.indexes.length == 0) { return }
-        if ($('#hv_div').length == 0) {
-            $('#technical_div').append(
+        if (getById('hv_div') === null) {
+            getById('technical_div').insertAdjacentHTML('beforebegin',
                     "<div id='hv_div'>" +
                     "<span class='technical_title'>Hv</span>" +
                     "<div id='hv_chart'></div>" +
@@ -241,375 +244,387 @@ function drawChart(dataTable) {
     dashboard.draw(dataTable);
 }
 
-function send () {
-    var params = {}
+function send() {
+    var request = new XMLHttpRequest();
+    var url = new URL(appUrl  + '/api/candle');
 
-    if ($("#inputSma").prop('checked')) {
-        params["sma"] = true
-        params["smaPeriod1"] = $("#inputSmaPeriod1").val();
-        params["smaPeriod2"] = $("#inputSmaPeriod2").val();
-        params["smaPeriod3"] = $("#inputSmaPeriod3").val();
+    if (getById('inputSma').checked) {
+        url.searchParams.append('sma', true);
+        url.searchParams.append('smaPeriod1', getById('inputSmaPeriod1').value);
+        url.searchParams.append('smaPeriod2', getById('inputSmaPeriod2').value);
+        url.searchParams.append('smaPeriod3', getById('inputSmaPeriod3').value);
+    }
+    if (getById('inputEma').checked) {
+        url.searchParams.append('ema', true);
+        url.searchParams.append('emaPeriod1', getById('inputEmaPeriod1').value);
+        url.searchParams.append('emaPeriod2', getById('inputEmaPeriod2').value);
+        url.searchParams.append('emaPeriod3', getById('inputEmaPeriod3').value);
+    }
+    if (getById('inputBBands').checked) {
+        url.searchParams.append('bbands', true);
+        url.searchParams.append('bbandsN', getById('inputBBandsN').value);
+        url.searchParams.append('bbandsK', getById('inputBBandsK').value);
+    }
+    if (getById('inputIchimoku').checked) {
+        url.searchParams.append('ichimoku', true);
+    }
+    if (getById('inputRsi').checked) {
+        url.searchParams.append('rsi', true);
+        url.searchParams.append('rsiPeriod', getById('inputRsiPeriod').value);
+    }
+    if (getById('inputMacd').checked) {
+        url.searchParams.append('macd', true);
+        url.searchParams.append('macdPeriod1', getById('inputMacdPeriod1').value);
+        url.searchParams.append('macdPeriod2', getById('inputMacdPeriod2').value);
+        url.searchParams.append('macdPeriod3', getById('inputMacdPeriod3').value);
+    }
+    if (getById('inputHv').checked) {
+        url.searchParams.append('hv', true);
+        url.searchParams.append('hvPeriod1', getById('inputHvPeriod1').value);
+        url.searchParams.append('hvPeriod2', getById('inputHvPeriod2').value);
+        url.searchParams.append('hvPeriod3', getById('inputHvPeriod3').value);
+    }
+    if (getById('inputEvents').checked) {
+        url.searchParams.append('events', true);
     }
 
-    if ($("#inputEma").prop('checked')) {
-        params["ema"] = true
-        params["emaPeriod1"] = $("#inputEmaPeriod1").val();
-        params["emaPeriod2"] = $("#inputEmaPeriod2").val();
-        params["emaPeriod3"] = $("#inputEmaPeriod3").val();
-    }
+    request.open('GET', url, true);
 
-    if ($("#inputBBands").prop('checked')) {
-        params["bbands"] = true
-        params["bbandsN"] = $("#inputBBandsN").val();
-        params["bbandsK"] = $("#inputBBandsK").val();
-    }
+    request.onload = function (e) {
+        if (request.status != 200) {
+            console.log('failed to GET request')
+        } else {
+            // 取得成功
+            var data = JSON.parse(request.response);
+            initConfigValues();
+            var dataTable = new google.visualization.DataTable();
+            dataTable.addColumn('date', 'Date');
+            dataTable.addColumn('number', 'Low');
+            dataTable.addColumn('number', 'Open');
+            dataTable.addColumn('number', 'Close');
+            dataTable.addColumn('number', 'High');
+            dataTable.addColumn('number', 'Volume');
 
-    if ($("#inputIchimoku").prop('checked')) {
-        params["ichimoku"] = true;
-    }
-
-    if ($("#inputRsi").prop('checked')) {
-        params["rsi"] = true;
-        params["rsiPeriod"] = $("#inputRsiPeriod").val();
-    }
-
-    if ($("#inputMacd").prop('checked')) {
-        params["macd"] = true;
-        params["macdPeriod1"] = $("#inputMacdPeriod1").val();
-        params["macdPeriod2"] = $("#inputMacdPeriod2").val();
-        params["macdPeriod3"] = $("#inputMacdPeriod3").val();
-    }
-
-    if ($("#inputHv").prop('checked')) {
-        params["hv"] = true;
-        params["hvPeriod1"] = $("#inputHvPeriod1").val();
-        params["hvPeriod2"] = $("#inputHvPeriod2").val();
-        params["hvPeriod3"] = $("#inputHvPeriod3").val();
-    }
-
-    if ($("#inputEvents").prop('checked')) {
-        params["events"] = true;
-    }
-    
-    console.log(params)
-    $.get("/api/candle/", params).done(function (data) {
-        initConfigValues();
-        var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn('date', 'Date');
-        dataTable.addColumn('number', 'Low');
-        dataTable.addColumn('number', 'Open');
-        dataTable.addColumn('number', 'Close');
-        dataTable.addColumn('number', 'High');
-        dataTable.addColumn('number', 'Volume');
-
-        if (data["smas"] != undefined) {
-            for (i = 0; i < data['smas'].length; i++){
-                var smaData = data['smas'][i];
-                if (smaData.length == 0){ continue; }
-                config.dataTable.index += 1;
-                config.sma.indexes[i] = config.dataTable.index;
-                dataTable.addColumn('number', 'SMA' + smaData["period"].toString());
-                config.sma.values[i] = smaData["values"]
+            if (data.smas != undefined) {
+                for (i = 0; i < data.smas.length; i++){
+                    var smaData = data.smas[i];
+                    if (smaData.length == 0){ continue; }
+                    config.dataTable.index += 1;
+                    config.sma.indexes[i] = config.dataTable.index;
+                    dataTable.addColumn('number', 'SMA' + smaData.period.toString());
+                    config.sma.values[i] = smaData.values
+                }
             }
-        }
 
-        if (data["emas"] != undefined) {
-            for (i = 0; i < data['emas'].length; i++){
-                var emaData = data['emas'][i];
-                if (emaData.length == 0){ continue; }
-                config.dataTable.index += 1;
-                config.ema.indexes[i] = config.dataTable.index;
-                dataTable.addColumn('number', 'EMA' + emaData["period"].toString());
-                config.ema.values[i] = emaData["values"]
+            if (data.emas != undefined) {
+                for (i = 0; i < data.emas.length; i++){
+                    var emaData = data.emas[i];
+                    if (emaData.length == 0){ continue; }
+                    config.dataTable.index += 1;
+                    config.ema.indexes[i] = config.dataTable.index;
+                    dataTable.addColumn('number', 'EMA' + emaData.period.toString());
+                    config.ema.values[i] = emaData.values
+                }
             }
-        }
 
-        if (data['bbands'] != undefined) {
-            var n = data['bbands']['n'];
-            var k = data['bbands']['k'];
-            var up = data['bbands']['up'];
-            var mid = data['bbands']['mid'];
-            var down = data['bbands']['down'];
-            config.dataTable.index += 1;
-            config.bbands.indexes[0] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.bbands.indexes[1] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.bbands.indexes[2] = config.dataTable.index;
-            dataTable.addColumn('number', 'BBands Up(' + n + ',' + k + ')');
-            dataTable.addColumn('number', 'BBands Mid(' + n + ',' + k + ')');
-            dataTable.addColumn('number', 'BBands Down(' + n + ',' + k + ')');
-            config.bbands.up = up;
-            config.bbands.mid = mid;
-            config.bbands.down = down;
-        }
+            if (data.bbands != undefined) {
+                var n = data.bbands.n;
+                var k = data.bbands.k;
+                var up = data.bbands.up;
+                var mid = data.bbands.mid;
+                var down = data.bbands.down;
+                config.dataTable.index += 1;
+                config.bbands.indexes[0] = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.bbands.indexes[1] = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.bbands.indexes[2] = config.dataTable.index;
+                dataTable.addColumn('number', 'BBands Up(' + n + ',' + k + ')');
+                dataTable.addColumn('number', 'BBands Mid(' + n + ',' + k + ')');
+                dataTable.addColumn('number', 'BBands Down(' + n + ',' + k + ')');
+                config.bbands.up = up;
+                config.bbands.mid = mid;
+                config.bbands.down = down;
+            }
 
-        if (data['ichimoku'] != undefined) {
-            var tenkan = data['ichimoku']['tenkan'];
-            var kijun = data['ichimoku']['kijun'];
-            var senkouA = data['ichimoku']['senkoua'];
-            var senkouB = data['ichimoku']['senkoub'];
-            var chikou = data['ichimoku']['chikou'];
-
-            config.dataTable.index += 1;
-            config.ichimoku.indexes[0] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.ichimoku.indexes[1] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.ichimoku.indexes[2] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.ichimoku.indexes[3] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.ichimoku.indexes[4] = config.dataTable.index;
-
-            config.ichimoku.tenkan = tenkan;
-            config.ichimoku.kijun = kijun;
-            config.ichimoku.senkouA = senkouA;
-            config.ichimoku.senkouB = senkouB;
-            config.ichimoku.chikou = chikou;
-
-            dataTable.addColumn('number', 'Tenkan');
-            dataTable.addColumn('number', 'Kijun');
-            dataTable.addColumn('number', 'SenkouA');
-            dataTable.addColumn('number', 'SenkouB');
-            dataTable.addColumn('number', 'Chikou');
-        }
-
-        if (data['rsi'] != undefined ){
-            config.dataTable.index += 1;
-            config.rsi.indexes['up'] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.rsi.indexes['value'] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.rsi.indexes['down'] = config.dataTable.index;
-            config.rsi.period = data['rsi']['period'];
-            config.rsi.values = data['rsi']['values'];
-            dataTable.addColumn('number', 'RSI Thread');
-            dataTable.addColumn('number', 'RSI(' + config.rsi.period + ')');
-            dataTable.addColumn('number', 'RSI Thread');
-        }
-
-        if (data['macd'] != undefined) {
-            var macdData = data['macd'];
-            var fast_period = macdData["fast_period"].toString();
-            var slow_period = macdData["slow_period"].toString();
-            var signal_period = macdData["signal_period"].toString();
-            var macd = macdData["macd"];
-            var macd_signal = macdData["macd_signal"];
-            var macd_hist = macdData["macd_hist"];
-
-            config.dataTable.index += 1;
-            config.macd.indexes[0] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.macd.indexes[1] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.macd.indexes[2] = config.dataTable.index;
-            var speriods = '(' + fast_period + ',' + slow_period + ',' + signal_period +')';
-            dataTable.addColumn('number', 'MD' + speriods);
-            dataTable.addColumn('number', 'MS' + speriods);
-            dataTable.addColumn('number', 'HT' + speriods);
-            config.macd.values[0] = macd;
-            config.macd.values[1] = macd_signal;
-            config.macd.values[2] = macd_hist;
-            config.macd.periods[0] = fast_period;
-            config.macd.periods[1] = slow_period;
-            config.macd.periods[2] = signal_period;
-        }
-
-        if (data['hvs'] != undefined) {
-            for (i = 0; i < data['hvs'].length; i++){
-                var hvData = data['hvs'][i];
-                if (hvData.length == 0){ continue; }
-
-                var period = hvData["period"].toString();
-                var value = hvData["values"];
+            if (data.ichimoku != undefined) {
+                var tenkan = data.ichimoku.tenkan;
+                var kijun = data.ichimoku.kijun;
+                var senkouA = data.ichimoku.senkoua;
+                var senkouB = data.ichimoku.senkoub;
+                var chikou = data.ichimoku.chikou;
 
                 config.dataTable.index += 1;
-                config.hv.indexes[i] = config.dataTable.index;
+                config.ichimoku.indexes[0] = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.ichimoku.indexes[1] = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.ichimoku.indexes[2] = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.ichimoku.indexes[3] = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.ichimoku.indexes[4] = config.dataTable.index;
 
-                dataTable.addColumn('number', 'HV(' + period + ')');
-                config.hv.values[i] = hvData["values"];
-                config.hv.periods[i] = period;
+                config.ichimoku.tenkan = tenkan;
+                config.ichimoku.kijun = kijun;
+                config.ichimoku.senkouA = senkouA;
+                config.ichimoku.senkouB = senkouB;
+                config.ichimoku.chikou = chikou;
+
+                dataTable.addColumn('number', 'Tenkan');
+                dataTable.addColumn('number', 'Kijun');
+                dataTable.addColumn('number', 'SenkouA');
+                dataTable.addColumn('number', 'SenkouB');
+                dataTable.addColumn('number', 'Chikou');
             }
+
+            if (data.rsi != undefined ){
+                config.dataTable.index += 1;
+                config.rsi.indexes.up = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.rsi.indexes.value = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.rsi.indexes.down = config.dataTable.index;
+                config.rsi.period = data.rsi.period;
+                config.rsi.values = data.rsi.values;
+                dataTable.addColumn('number', 'RSI Thread');
+                dataTable.addColumn('number', 'RSI(' + config.rsi.period + ')');
+                dataTable.addColumn('number', 'RSI Thread');
+            }
+
+            if (data.macd != undefined) {
+                var macdData = data.macd;
+                var fast_period = macdData.fast_period.toString();
+                var slow_period = macdData.slow_period.toString();
+                var signal_period = macdData.signal_period.toString();
+                var macd = macdData.macd;
+                var macd_signal = macdData.macd_signal;
+                var macd_hist = macdData.macd_hist;
+
+                config.dataTable.index += 1;
+                config.macd.indexes[0] = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.macd.indexes[1] = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.macd.indexes[2] = config.dataTable.index;
+                var speriods = '(' + fast_period + ',' + slow_period + ',' + signal_period +')';
+                dataTable.addColumn('number', 'MD' + speriods);
+                dataTable.addColumn('number', 'MS' + speriods);
+                dataTable.addColumn('number', 'HT' + speriods);
+                config.macd.values[0] = macd;
+                config.macd.values[1] = macd_signal;
+                config.macd.values[2] = macd_hist;
+                config.macd.periods[0] = fast_period;
+                config.macd.periods[1] = slow_period;
+                config.macd.periods[2] = signal_period;
+            }
+
+            if (data.hvs != undefined) {
+                for (i = 0; i < data.hvs.length; i++){
+                    var hvData = data.hvs[i];
+                    if (hvData.length == 0){ continue; }
+
+                    var period = hvData.period.toString();
+                    var value = hvData.values;
+
+                    config.dataTable.index += 1;
+                    config.hv.indexes[i] = config.dataTable.index;
+
+                    dataTable.addColumn('number', 'HV(' + period + ')');
+                    config.hv.values[i] = hvData.values;
+                    config.hv.periods[i] = period;
+                }
+            }
+
+            if (data.events != undefined) {
+                config.dataTable.index += 1;
+                config.events.indexes[0] = config.dataTable.index;
+                config.dataTable.index += 1;
+                config.events.indexes[1] = config.dataTable.index;
+
+                config.events.values = data.events.signals;
+                config.events.first = config.events.values.shift();
+
+                dataTable.addColumn('number', 'Marker');
+                dataTable.addColumn({type:'string', role:'annotation'});
+
+                if (data.events.profit != undefined) {
+                    profit = String(Math.round(data.events.profit * 100) / 100) + '円';
+                    getById('profit').innerHTML = 'Change:' + profit;
+                }
+            }
+
+            var googleChartData = [];
+            var candles = data.candles;
+
+            for(var i=0; i < candles.length; i++){
+                var candle = candles[i];
+                var date = new Date(candle.time);
+                var datas = [date, candle.low, candle.open, candle.close, candle.high, candle.volume];
+
+                if (data.smas != undefined) {
+                    for (j = 0; j < config.sma.values.length; j++) {
+                        if (config.sma.values[j][i] == 0) {
+                            datas.push(null);
+                        } else {
+                            datas.push(config.sma.values[j][i]);
+                        }
+                    }
+                }
+
+                if (data.emas != undefined) {
+                    for (j = 0; j < config.ema.values.length; j++) {
+                        if (config.ema.values[j][i] == 0) {
+                            datas.push(null);
+                        } else {
+                            datas.push(config.ema.values[j][i]);
+                        }
+                    }
+                }
+
+                if (data.bbands != undefined) {
+                    if (config.bbands.up[i] == 0) {
+                        datas.push(null);
+                    } else {
+                        datas.push(config.bbands.up[i]);
+                    }
+                    if (config.bbands.mid[i] == 0) {
+                        datas.push(null);
+                    } else {
+                        datas.push(config.bbands.mid[i]);
+                    }
+                    if (config.bbands.down[i] == 0) {
+                        datas.push(null);
+                    } else {
+                        datas.push(config.bbands.down[i]);
+                    }
+                }
+
+                if (data.ichimoku != undefined) {
+                    if (config.ichimoku.tenkan[i] == 0) {
+                        datas.push(null);
+                    } else {
+                        datas.push(config.ichimoku.tenkan[i]);
+                    }
+                    if (config.ichimoku.kijun[i] == 0) {
+                        datas.push(null);
+                    } else {
+                        datas.push(config.ichimoku.kijun[i]);
+                    }
+                    if (config.ichimoku.senkouA[i] == 0) {
+                        datas.push(null);
+                    } else {
+                        datas.push(config.ichimoku.senkouA[i]);
+                    }
+                    if (config.ichimoku.senkouB[i] == 0) {
+                        datas.push(null);
+                    } else {
+                        datas.push(config.ichimoku.senkouB[i]);
+                    }
+                    if (config.ichimoku.chikou[i] == 0) {
+                        datas.push(null);
+                    } else {
+                        datas.push(config.ichimoku.chikou[i]);
+                    }
+                }
+
+                if (data.events != undefined) {
+                    var event = config.events.first
+                    if (event == undefined) {
+                        datas.push(null);
+                        datas.push(null);
+                    }else if(event.time == candle.time) {
+                        datas.push(candle.high + 1);
+                        datas.push(event.side);
+                        config.events.first = config.events.values.shift();
+                    }else{
+                        datas.push(null);
+                        datas.push(null);
+                    }
+                }
+
+                if (data.rsi != undefined){
+                    datas.push(config.rsi.up);
+                    if (config.rsi.values[i] == 0) {
+                        datas.push(null);
+                    }else{
+                        datas.push(config.rsi.values[i]);
+                    }
+                    datas.push(config.rsi.down);
+                }
+
+                if (data.macd != undefined) {
+                    for (j = 0; j < config.macd.values.length; j++) {
+                        if (config.macd.values[j][i] == 0) {
+                            datas.push(null);
+                        } else {
+                            datas.push(config.macd.values[j][i]);
+                        }
+                    }
+                }
+
+                if (data.hvs != undefined) {
+                    for (j = 0; j < config.hv.values.length; j++) {
+                        if (config.hv.values[j][i] == 0) {
+                            datas.push(null);
+                        } else {
+                            datas.push(config.hv.values[j][i]);
+                        }
+                    }
+                }
+
+                googleChartData.push(datas)
+            }
+
+            dataTable.addRows(googleChartData);
+            drawChart(dataTable);
         }
-
-        if (data['events'] != undefined) {
-            config.dataTable.index += 1;
-            config.events.indexes[0] = config.dataTable.index;
-            config.dataTable.index += 1;
-            config.events.indexes[1] = config.dataTable.index;
-
-            config.events.values = data['events']['signals'];
-            config.events.first = config.events.values.shift();
-
-            dataTable.addColumn('number', 'Marker');
-            dataTable.addColumn({type:'string', role:'annotation'});
-
-            if (data['events']['profit'] != undefined) {
-                profit = String(Math.round(data['events']['profit'] * 100) / 100) + "円";
-                $('#profit').html("Change:" + profit);
-            }
-        }
-
-        var googleChartData = [];
-        var candles = data["candles"];
-
-        for(var i=0; i < candles.length; i++){
-            var candle = candles[i];
-            var date = new Date(candle.time);
-            var datas = [date, candle.low, candle.open, candle.close, candle.high, candle.volume];
-
-            if (data["smas"] != undefined) {
-                for (j = 0; j < config.sma.values.length; j++) {
-                    if (config.sma.values[j][i] == 0) {
-                        datas.push(null);
-                    } else {
-                        datas.push(config.sma.values[j][i]);
-                    }
-                }
-            }
-
-            if (data["emas"] != undefined) {
-                for (j = 0; j < config.ema.values.length; j++) {
-                    if (config.ema.values[j][i] == 0) {
-                        datas.push(null);
-                    } else {
-                        datas.push(config.ema.values[j][i]);
-                    }
-                }
-            }
-
-            if (data["bbands"] != undefined) {
-                if (config.bbands.up[i] == 0) {
-                    datas.push(null);
-                } else {
-                    datas.push(config.bbands.up[i]);
-                }
-                if (config.bbands.mid[i] == 0) {
-                    datas.push(null);
-                } else {
-                    datas.push(config.bbands.mid[i]);
-                }
-                if (config.bbands.down[i] == 0) {
-                    datas.push(null);
-                } else {
-                    datas.push(config.bbands.down[i]);
-                }
-            }
-
-            if (data["ichimoku"] != undefined) {
-                if (config.ichimoku.tenkan[i] == 0) {
-                    datas.push(null);
-                } else {
-                    datas.push(config.ichimoku.tenkan[i]);
-                }
-                if (config.ichimoku.kijun[i] == 0) {
-                    datas.push(null);
-                } else {
-                    datas.push(config.ichimoku.kijun[i]);
-                }
-                if (config.ichimoku.senkouA[i] == 0) {
-                    datas.push(null);
-                } else {
-                    datas.push(config.ichimoku.senkouA[i]);
-                }
-                if (config.ichimoku.senkouB[i] == 0) {
-                    datas.push(null);
-                } else {
-                    datas.push(config.ichimoku.senkouB[i]);
-                }
-                if (config.ichimoku.chikou[i] == 0) {
-                    datas.push(null);
-                } else {
-                    datas.push(config.ichimoku.chikou[i]);
-                }
-            }
-
-            if (data['events'] != undefined) {
-                var event = config.events.first
-                if (event == undefined) {
-                    datas.push(null);
-                    datas.push(null);
-                }else if(event.time == candle.time) {
-                    datas.push(candle.high + 1);
-                    datas.push(event.side);
-                    config.events.first = config.events.values.shift();
-                }else{
-                    datas.push(null);
-                    datas.push(null);
-                }
-            }
-
-            if (data["rsi"] != undefined){
-                datas.push(config.rsi.up);
-                if (config.rsi.values[i] == 0) {
-                    datas.push(null);
-                }else{
-                    datas.push(config.rsi.values[i]);
-                }
-                datas.push(config.rsi.down);
-            }
-
-            if (data["macd"] != undefined) {
-                for (j = 0; j < config.macd.values.length; j++) {
-                    if (config.macd.values[j][i] == 0) {
-                        datas.push(null);
-                    } else {
-                        datas.push(config.macd.values[j][i]);
-                    }
-                }
-            }
-
-            if (data["hvs"] != undefined) {
-                for (j = 0; j < config.hv.values.length; j++) {
-                    if (config.hv.values[j][i] == 0) {
-                        datas.push(null);
-                    } else {
-                        datas.push(config.hv.values[j][i]);
-                    }
-                }
-            }
-
-            googleChartData.push(datas)
-        }
-
-        dataTable.addRows(googleChartData);
-        drawChart(dataTable);
-    })
+    };
+    request.send(null)
 }
 
-setInterval(send, 1000)
+setInterval('send()', 1000 * 3)
 window.onload = function () {
-    send()
-
-    $("#indicator input").change(function() {
-        send();
+    ids = [
+        'inputSma', 'inputSmaPeriod1', 'inputSmaPeriod2',
+        'inputSmaPeriod3', 'inputEma', 'inputEmaPeriod1', 
+        'inputEmaPeriod2', 'inputEmaPeriod3', 'inputBBands', 'inputBBandsN', 'inputBBandsK', 'inputIchimoku'
+    ];
+    ids.forEach(id => {
+        getById(id).addEventListener('change', (e) => {
+            send();
+        });
     });
-    $('#inputVolume').change(function() {
-        if (this.checked) {
+    getById('inputVolume').addEventListener('change', (e) => {
+        if (e.target.checked) {
             drawChart(config.dataTable.value);
         } else {
-            $('#volume_div').remove();
+            getById('volume_div').remove();
         }
+        send();
     });
-    $('#inputRsi').change(function() {
-        if (!this.checked) {
-            $('#rsi_div').remove();
+    getById('inputRsi').addEventListener('change', (e) => {
+        if (!e.target.checked) {
+            getById('rsi_div').remove();
         }
+        send();
     });
-    $('#inputMacd').change(function() {
-        if (!this.checked) {
-            $('#macd_div').remove();
+    getById('inputMacd').addEventListener('change', (e) => {
+        if (!e.target.checked) {
+            getById('macd_div').remove();
         }
+        send();
     });
-    $('#inputHv').change(function() {
-        if (!this.checked) {
-            $('#hv_div').remove();
+    getById('inputHv').addEventListener('change', (e) => {
+        if (!e.target.checked) {
+            getById('hv_div').remove();
         }
+        send();
     });
-    $('#inputEvents').change(function() {
-        if (!this.checked) {
-            $('#profit').html("");
+    getById('inputEvents').addEventListener('change', (e) => {
+        if (!e.target.checked) {
+            getById('profit').innerHTML = '';
         }
+        send();
     });
 }
