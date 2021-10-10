@@ -89,7 +89,6 @@ func (ai *AI) Buy(candle models.Candle) (childOrderAcceptanceID string, isOrderC
 	}
 
 	if !ai.SignalEvents.CanBuy(candle.Time) {
-		log.Println("cannot buy")
 		return "", false, nil
 	}
 
