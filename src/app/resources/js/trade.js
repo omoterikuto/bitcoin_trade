@@ -583,8 +583,9 @@ function send() {
     request.send(null)
 }
 
-setInterval(send, 1000 * 60)
+setInterval('send()', 1000 * 60)
 window.onload = function () {
+    send();
     ids = [
         'inputSma', 'inputSmaPeriod1', 'inputSmaPeriod2',
         'inputSmaPeriod3', 'inputEma', 'inputEmaPeriod1', 
