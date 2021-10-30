@@ -26,9 +26,26 @@ type APIClient struct {
 	httpClient *http.Client
 }
 
-func New(key, secret string) *APIClient {
-	apiClient := &APIClient{key, secret, &http.Client{}}
+func New(key, secret string, opts ...Option) *APIClient {
+	apiClient := &APIClient{
+		key:        key,
+		secret:     secret,
+		httpClient: http.DefaultClient,
+	}
+
+	for _, opt := range opts {
+		opt(apiClient)
+	}
+
 	return apiClient
+}
+
+type Option func(*APIClient)
+
+func OptionHTTPClient(c *http.Client) Option {
+	return func(api *APIClient) {
+		api.httpClient = c
+	}
 }
 
 func (api APIClient) header(method, endpoint string, body []byte) map[string]string {
@@ -71,12 +88,18 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 	for key, value := range api.header(method, req.URL.RequestURI(), data) {
 		req.Header.Add(key, value)
 	}
+
 	resp, err := api.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
+	if resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("bad response status code %d", resp.StatusCode)
+	}
+
 	defer resp.Body.Close()
 	body, err = ioutil.ReadAll(resp.Body)
+
 	if err != nil {
 		return nil, err
 	}

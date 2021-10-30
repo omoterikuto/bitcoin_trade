@@ -156,7 +156,6 @@ func (ai *AI) Sell(candle models.Candle) (childOrderAcceptanceID string, isOrder
 		return
 	}
 	if resp.ChildOrderAcceptanceID == "" {
-		// Insufficient funds
 		log.Printf("order=%+v status=no_id", order)
 		return
 	}

@@ -1,0 +1,34 @@
+[
+  {
+    "events": [
+      {
+        "time": "2021-01-01T00:00:00+09:00",
+        "product_code": "BTC_JPY",
+        "side": "BUY",
+        "price": 5000000,
+        "size": 0.1
+      },
+      {
+        "time": "2021-01-02T00:00:00+09:00",
+        "product_code": "BTC_JPY",
+        "side": "SELL",
+        "price": 5500000,
+        "size": 0.1
+      },
+      {
+        "time": "2021-01-03T00:00:00+09:00",
+        "product_code": "BTC_JPY",
+        "side": "BUY",
+        "price": 4500000,
+        "size": 0.1
+      },
+      {
+        "time": "2021-01-04T00:00:00+09:00",
+        "product_code": "BTC_JPY",
+        "side": "SELL",
+        "price": 5000000,
+        "size": 0.1
+      }
+    ]
+  }
+]

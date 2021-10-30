@@ -2,6 +2,9 @@ package config
 
 import (
 	"log"
+	"os"
+	"path"
+	"runtime"
 	"time"
 
 	"gopkg.in/ini.v1"
@@ -31,7 +34,15 @@ var Config ConfigList
 func init() {
 	setTimeZone()
 
-	cfg, err := ini.Load("config.ini")
+	// test実行時カレントディレクトリが実行するtestのディレクトリになるのを防ぐ
+	_, filename, _, _ := runtime.Caller(0)
+	dir := path.Join(path.Dir(filename), "..")
+	err := os.Chdir(dir)
+	if err != nil {
+		log.Fatal("Failed to change working directory: ", err)
+	}
+
+	cfg, err := ini.Load("config/config.ini")
 	if err != nil {
 		log.Fatal("Failed to read file: ", err)
 	}

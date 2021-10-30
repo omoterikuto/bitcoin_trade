@@ -3,6 +3,7 @@ module src
 go 1.16
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/markcheno/go-talib v0.0.0-20190307022042-cd53a9264d70
 	github.com/smartystreets/goconvey v1.6.4 // indirect

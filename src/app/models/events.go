@@ -25,11 +25,6 @@ func NewSignalEvents() *SignalEvents {
 }
 
 func GetSignalEventsByCount(loadEvents int) *SignalEvents {
-	// cmd := fmt.Sprintf(`SELECT * FROM (
-	//     SELECT time, product_code, side, price, size FROM %s WHERE product_code = ? ORDER BY time DESC LIMIT ? )
-	//     ORDER BY time ASC;`, tableNameSignalEvents)
-	// rows, err := DbConnection.Query(cmd, config.Config.ProductCode, loadEvents)
-
 	eventSlices := []SignalEvent{}
 	Db.Where("product_code=?", config.Config.ProductCode).Order("time desc").Limit(loadEvents).Find(&eventSlices)
 
@@ -44,24 +39,6 @@ func GetSignalEventsByCount(loadEvents int) *SignalEvents {
 }
 
 func GetSignalEventsAfterTime(dateTime time.Time) *SignalEvents {
-	// cmd := fmt.Sprintf(`SELECT * FROM (
-	//             SELECT time, product_code, side, price, size FROM %s
-	//             WHERE DATETIME(time) >= DATETIME(?)
-	//             ORDER BY time DESC
-	//         ) ORDER BY time ASC;`, tableNameSignalEvents)
-
-	// rows, err := DbConnection.Query(cmd, timeTime.Format(time.RFC3339))
-	// if err != nil {
-	// 	return nil
-	// }
-	// defer rows.Close()
-
-	// var signalEvents SignalEvents
-	// for rows.Next() {
-	// 	var signalEvent SignalEvent
-	// 	rows.Scan(&signalEvent.Time, &signalEvent.ProductCode, &signalEvent.Side, &signalEvent.Price, &signalEvent.Size)
-	// 	signalEvents.Signals = append(signalEvents.Signals, signalEvent)
-	// }
 	eventSlices := []SignalEvent{}
 	Db.Where("time >= ?", dateTime).Order("time desc").Find(&eventSlices)
 
