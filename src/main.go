@@ -4,10 +4,14 @@ import (
 	"src/app/controllers"
 	"src/config"
 	"src/utils"
+
+	"google.golang.org/appengine"
 )
 
 func main() {
-	utils.LoggingSettings(config.Config.LogFile)
+	if !appengine.IsAppEngine() {
+		utils.LoggingSettings(config.Config.LogFile)
+	}
 	controllers.StreamIngestionData()
 	controllers.StartWebServer()
 }

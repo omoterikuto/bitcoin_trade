@@ -7,6 +7,7 @@ import (
 	"src/config"
 	"time"
 
+	"google.golang.org/appengine"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -29,7 +30,11 @@ var Db *gorm.DB
 
 func init() {
 	var err error
-	Db, err = sqlConnect()
+	if appengine.IsAppEngine() {
+		Db, err = gcpSqlConnect()
+	} else {
+		Db, err = sqlConnect()
+	}
 	if err != nil {
 		log.Fatal("sql connect error", err)
 	} else {
@@ -58,7 +63,38 @@ func sqlConnect() (sqlDb *gorm.DB, err error) {
 			if err == nil {
 				break
 			}
-			log.Print(".")
+			log.Printf("%d time failed", count)
+			time.Sleep(time.Second)
+			count++
+			if count > 20 {
+				return nil, err
+			}
+			db, err = gorm.Open(mysql.New(mysql.Config{
+				DriverName: "mysql",
+				DSN:        dataSourceName,
+			}), &gorm.Config{})
+		}
+	}
+
+	return db, err
+}
+func gcpSqlConnect() (sqlDb *gorm.DB, err error) {
+	c := config.Config
+	dataSourceName := fmt.Sprintf("%s:%s@unix(/cloudsql/%s)/%s?parseTime=true&loc=%s", c.DbUser, c.DbPassword, c.DbConection, c.DbName, "Asia%2FTokyo")
+
+	db, err := gorm.Open(mysql.New(mysql.Config{
+		DSN:                      dataSourceName,
+		DisableDatetimePrecision: true,
+	}), &gorm.Config{})
+
+	count := 0
+
+	if err != nil {
+		for {
+			if err == nil {
+				break
+			}
+			log.Printf("%d time failed", count)
 			time.Sleep(time.Second)
 			count++
 			if count > 20 {

@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"time"
 
+	"google.golang.org/appengine"
 	"gopkg.in/ini.v1"
 )
 
@@ -23,6 +24,8 @@ type ConfigList struct {
 	DbPassword  string
 	DbContainer string
 
+	DbConection string
+
 	WebPort int
 
 	ApiKey    string
@@ -35,11 +38,13 @@ func init() {
 	setTimeZone()
 
 	// test実行時カレントディレクトリが実行するtestのディレクトリになるのを防ぐ
-	_, filename, _, _ := runtime.Caller(0)
-	dir := path.Join(path.Dir(filename), "..")
-	err := os.Chdir(dir)
-	if err != nil {
-		log.Fatal("Failed to change working directory: ", err)
+	if !appengine.IsAppEngine() {
+		_, filename, _, _ := runtime.Caller(0)
+		dir := path.Join(path.Dir(filename), "..")
+		err := os.Chdir(dir)
+		if err != nil {
+			log.Fatal("Failed to change working directory: ", err)
+		}
 	}
 
 	cfg, err := ini.Load("config/config.ini")
@@ -53,10 +58,17 @@ func init() {
 		"1d": time.Hour * 24,
 	}
 
+	var baseUrl string
+	if appengine.IsAppEngine() {
+		baseUrl = cfg.Section("btc_trade").Key("gae_app_url").String()
+	} else {
+		baseUrl = cfg.Section("btc_trade").Key("local_app_url").String()
+	}
+
 	Config = ConfigList{
 		LogFile:     cfg.Section("btc_trade").Key("log_file").String(),
 		ProductCode: cfg.Section("btc_trade").Key("product_code").String(),
-		BaseUrl:     cfg.Section("btc_trade").Key("base_url").String(),
+		BaseUrl:     baseUrl,
 		Durations:   durations,
 
 		DbName:      cfg.Section("db").Key("name").String(),
@@ -65,6 +77,7 @@ func init() {
 		DbPort:      cfg.Section("db").Key("port").MustInt(),
 		DbPassword:  cfg.Section("db").Key("password").String(),
 		DbContainer: cfg.Section("db").Key("container").String(),
+		DbConection: cfg.Section("db").Key("connection_name").String(),
 
 		WebPort: cfg.Section("web").Key("port").MustInt(),
 
