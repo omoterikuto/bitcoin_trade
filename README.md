@@ -14,8 +14,16 @@
 ### デプロイ環境
 - GCP(GAE、Mysql 8.0)
 
+### 外部API、サービス
+- bitflyerAPI
+- GoogleChart
+
 ## 工夫点
+- docker,docker composeによるローカル開発環境の構築
 - MarshallJSON実装
 - DateFrameの実装
 - バックテストの実装
 - ホットリロードの導入
+- goroutineによるリアルタイムでのビットコイン情報の取得とトレード・分析の並列処理
+- testdateディレクトリ内のjsonデータによるユニットテスト
+- RoundTripの実装によるHTTP Clientのテスト
