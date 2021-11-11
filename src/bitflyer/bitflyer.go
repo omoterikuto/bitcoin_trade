@@ -203,12 +203,11 @@ OUTER:
 		message := new(JsonRPC2)
 		if err := c.ReadJSON(message); err != nil {
 			log.Println("read json error:", err)
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-				c, err = connectToBitflyer(symbol, channel)
-				if err != nil {
-					log.Fatal("failed to connect bitflyer: ", err)
-				}
+			c, err = connectToBitflyer(symbol, channel)
+			if err != nil {
+				log.Fatal("failed to reconnect bitflyer: ", err)
 			}
+			continue OUTER
 		}
 
 		if message.Method == "channelMessage" {

@@ -25,3 +25,4 @@
 *.out
 
 .air.toml
+btc_trade.log
