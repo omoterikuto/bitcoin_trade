@@ -21,20 +21,20 @@
       Period<input id="inputSmaPeriod1" type="number" value="7">
       <input id="inputSmaPeriod2" type="number" value="14">
       <input id="inputSmaPeriod3" type="number" value="50">
-      </div>
+    </div>
 
     <div>
       EMA <input id="inputEma" type="checkbox">
       Period<input id="inputEmaPeriod1" type="number" value="7">
       <input id="inputEmaPeriod2" type="number" value="14">
       <input id="inputEmaPeriod3" type="number" value="50">
-      </div>
+    </div>
 
     <div>
       BBands <input id="inputBBands" type="checkbox">
       N <input id="inputBBandsN" type="number" value="20">
       K <input id="inputBBandsK" type="number" value="2">
-      </div>
+    </div>
 
     <div>
       Ichimoku <input id="inputIchimoku" type="checkbox">
@@ -47,65 +47,62 @@
     <div>
       Rsi <input id="inputRsi" type="checkbox">
       Period <input id="inputRsiPeriod" type="number" value="14">
-      </div>
+    </div>
 
     <div>
       MACD <input id="inputMacd" type="checkbox">
       Period<input id="inputMacdPeriod1" type="number" value="12">
       <input id="inputMacdPeriod2" type="number" value="26">
       <input id="inputMacdPeriod3" type="number" value="9">
-      </div>
+    </div>
 
     <div>
       HV <input id="inputHv" type="checkbox">
       Period<input id="inputHvPeriod1" type="number" value="21">
       <input id="inputHvPeriod2" type="number" value="63">
       <input id="inputHvPeriod3" type="number" value="252">
-      </div>
+    </div>
 
     <div>
       Events <input id="inputEvents" type="checkbox">
       <div id="profit"></div>
-      </div>
-      </div>
-      <div>
-        <form method="POST" class="setting-form">
-          <h3 class="setting-title">トレード設定</h3>
-          <div class="form-item">
-            <label for="trade_duration">トレード期間</label>
-            <select id="trade_duration" name="tradeDuration">
-              <option value="1m" {{ if eq .duration "1m" }} selected {{ end }}>1分</option>
-              <option value="1h" {{ if eq .duration "1h" }} selected {{ end }}>1時間</option>
-              <option value="1d" {{ if eq .duration "1d" }} selected {{ end }}>1日</option>
-            </select>
-          </div>
-          <div class="form-item">
-            <label for="back_test">バックテスト</label>
-            <input id="back_test" type="checkbox" name="backTest" {{ if .backTest }} checked {{ end }} value="true">
-            <!-- 未チェック時にfalseを送信する為 -->
-            <input name="backTest" type="hidden" value="false" />
-          </div>
-          <div class="form-item">
-            <label for="user_rate">保持数に対する使用率</label>
-            <input id="user_rate" type="number" name="useRate" step="0.1" max="1" min="0.1" value="{{ .userRate }}">
-          </div>
-          <div class="form-item">
-            <label for="data_limit">データリミット</label>
-            <input id="data_limit" type="number" name="dataLimit" value="{{ .dataLimit }}">
-          </div>
-          <div class="form-item">
-            <label for="stop_limit_rate">取引停止割合</label>
-            <input id="stop_limit_rate" type="number" name="stopLimitRate" step="0.1" max="1" min="0.1"
-              value="{{ .stopLimitRate }}">
-          </div>
-          <div class="form-item">
-            <label for="num_ranking">使用インディケーター数</label>
-            <input id="num_ranking" type="number" name="numRanking" min="1" max="10" value="{{ .numRanking }}">
-          </div>
-          <input type="submit" value="保存">
-        </form>
-      </div>
-
+    </div>
+  </div>
+  <form method="POST" class="setting-form">
+    <h3 class="setting-title">トレード設定</h3>
+    <div class="form-item">
+      <label for="trade_duration">トレード期間</label>
+      <select id="trade_duration" name="tradeDuration">
+        <option value="1m" {{ if eq .duration "1m" }} selected {{ end }}>1分</option>
+        <option value="1h" {{ if eq .duration "1h" }} selected {{ end }}>1時間</option>
+        <option value="1d" {{ if eq .duration "1d" }} selected {{ end }}>1日</option>
+      </select>
+    </div>
+    <div class="form-item">
+      <label for="back_test">バックテスト</label>
+      <input id="back_test" type="checkbox" name="backTest" {{ if .backTest }} checked {{ end }} value="true">
+      <!-- 未チェック時にfalseを送信する為 -->
+      <input name="backTest" type="hidden" value="false" />
+    </div>
+    <div class="form-item">
+      <label for="user_rate">保持数に対する使用率</label>
+      <input id="user_rate" type="number" name="useRate" step="0.1" max="1" min="0.1" value="{{ .userRate }}">
+    </div>
+    <div class="form-item">
+      <label for="data_limit">データリミット</label>
+      <input id="data_limit" type="number" name="dataLimit" value="{{ .dataLimit }}">
+    </div>
+    <div class="form-item">
+      <label for="stop_limit_rate">取引停止割合</label>
+      <input id="stop_limit_rate" type="number" name="stopLimitRate" step="0.1" max="1" min="0.1"
+        value="{{ .stopLimitRate }}">
+    </div>
+    <div class="form-item">
+      <label for="num_ranking">使用インディケーター数</label>
+      <input id="num_ranking" type="number" name="numRanking" min="1" max="10" value="{{ .numRanking }}">
+    </div>
+    <input type="submit" value="保存">
+  </form>
 </div>
 <div id="dashboard_div">
     <div id="chart_div"></div>

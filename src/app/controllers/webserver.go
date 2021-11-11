@@ -17,7 +17,7 @@ var templates = template.Must(template.ParseFiles("app/views/chart.html"))
 func StartWebServer() error {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("app/resources/"))))
 	http.HandleFunc("/api/candle/", apiMakeHandler(apiCandleHandler))
-	http.HandleFunc("/chart/", viewChartHandler)
+	http.HandleFunc("/", viewChartHandler)
 	return http.ListenAndServe(fmt.Sprintf(":%d", config.Config.WebPort), nil)
 }
 
