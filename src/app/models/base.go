@@ -40,6 +40,11 @@ func init() {
 	} else {
 		log.Println("success to connect to database!")
 	}
+	sqlDB, err := Db.DB()
+	if err != nil {
+		log.Println("failed to get sql.DB: ", err)
+	}
+	sqlDB.SetConnMaxLifetime(time.Second * 10)
 
 	err = migrate()
 	if err != nil {
@@ -87,17 +92,17 @@ func gcpSqlConnect() (sqlDb *gorm.DB, err error) {
 		DisableDatetimePrecision: true,
 	}), &gorm.Config{})
 
-	count := 0
+	numberOfFail := 0
 
 	if err != nil {
 		for {
 			if err == nil {
 				break
 			}
-			log.Printf("%d time failed", count)
+			log.Printf("%d time failed", numberOfFail)
 			time.Sleep(time.Second)
-			count++
-			if count > 20 {
+			numberOfFail++
+			if numberOfFail > 20 {
 				return nil, err
 			}
 			db, err = gorm.Open(mysql.New(mysql.Config{

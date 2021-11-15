@@ -246,15 +246,11 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 		df.AddHv(period3)
 	}
 
-	events := r.URL.Query().Get("events")
-
-	if events != "" {
-		if s.BackTest {
-			df.Events = Ai.SignalEvents.CollectAfter(df.Candles[0].Time)
-		} else {
-			firstTime := df.Candles[0].Time
-			df.AddEvents(firstTime)
-		}
+	if s.BackTest {
+		df.Events = Ai.SignalEvents.CollectAfter(df.Candles[0].Time)
+	} else {
+		firstTime := df.Candles[0].Time
+		df.AddEvents(firstTime)
 	}
 
 	js, err := json.Marshal(df)

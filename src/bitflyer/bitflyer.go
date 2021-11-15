@@ -192,10 +192,7 @@ type SubscribeParams struct {
 
 func (api *APIClient) GetRealTimeTicker(symbol string, ch chan<- Ticker) {
 	channel := fmt.Sprintf("lightning_ticker_%s", symbol)
-	c, err := connectToBitflyer(symbol, channel)
-	if err != nil {
-		log.Fatal("failed to connect bitflyer: ", err)
-	}
+	c := connectToBitflyer(symbol, channel)
 	defer c.Close()
 
 OUTER:
@@ -203,10 +200,8 @@ OUTER:
 		message := new(JsonRPC2)
 		if err := c.ReadJSON(message); err != nil {
 			log.Println("read json error:", err)
-			c, err = connectToBitflyer(symbol, channel)
-			if err != nil {
-				log.Fatal("failed to reconnect bitflyer: ", err)
-			}
+			c = connectToBitflyer(symbol, channel)
+
 			continue OUTER
 		}
 
@@ -232,20 +227,31 @@ OUTER:
 	}
 }
 
-func connectToBitflyer(symbol, channel string) (*websocket.Conn, error) {
+func connectToBitflyer(symbol, channel string) *websocket.Conn {
 	u := url.URL{Scheme: "wss", Host: "ws.lightstream.bitflyer.com", Path: "/json-rpc"}
 	log.Printf("connecting to %s", u.String())
 
-	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	if err != nil {
-		log.Fatal("dial:", err)
+	numberOfFail := 0
+OUTER:
+	for numberOfFail < 100 {
+		c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+		if err != nil {
+			log.Println("dial error:", err)
+			numberOfFail++
+			time.Sleep(10 * time.Second)
+			continue OUTER
+		}
+
+		if err := c.WriteJSON(&JsonRPC2{Version: "2.0", Method: "subscribe", Params: &SubscribeParams{channel}}); err != nil {
+			log.Println("WriteJSON error:", err)
+			numberOfFail++
+			time.Sleep(10 * time.Second)
+			continue OUTER
+		}
+		return c
 	}
 
-	if err := c.WriteJSON(&JsonRPC2{Version: "2.0", Method: "subscribe", Params: &SubscribeParams{channel}}); err != nil {
-		log.Fatal("subscribe:", err)
-		return nil, err
-	}
-	return c, nil
+	return nil
 }
 
 type Order struct {

@@ -101,7 +101,7 @@ function drawChart(dataTable) {
         }
     }
 
-    if (getById('inputEvents').checked && config.events.indexes.length > 0){
+    if (config.events.indexes.length > 0) {
         options.series[config.events.indexes[0]] = {
             'type': 'line',
             tooltip: 'none',
@@ -284,9 +284,6 @@ function send() {
         url.searchParams.append('hvPeriod2', getById('inputHvPeriod2').value);
         url.searchParams.append('hvPeriod3', getById('inputHvPeriod3').value);
     }
-    if (getById('inputEvents').checked) {
-        url.searchParams.append('events', true);
-    }
 
     request.open('GET', url, true);
 
@@ -449,9 +446,11 @@ function send() {
                 dataTable.addColumn({type:'string', role:'annotation'});
 
                 if (data.events.profit != undefined) {
-                    profit = String(Math.round(data.events.profit * 100) / 100) + '円';
-                    getById('profit').innerHTML = 'Change:' + profit;
+                    profit = String(Math.round(data.events.profit * 100) / 100);
+                } else {
+                    profit = 0;
                 }
+                getById('profit').innerHTML = profit;
             }
 
             var googleChartData = [];
@@ -619,12 +618,6 @@ window.onload = function () {
     getById('inputHv').addEventListener('change', (e) => {
         if (!e.target.checked) {
             getById('hv_div').remove();
-        }
-        send();
-    });
-    getById('inputEvents').addEventListener('change', (e) => {
-        if (!e.target.checked) {
-            getById('profit').innerHTML = '';
         }
         send();
     });

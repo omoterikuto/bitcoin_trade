@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Chart</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-    <script type="text/javascript" src="/static/js/trade.js"></script>
-    <script type="text/javascript" src="/static/js/config.js"></script>
+  <meta charset="UTF-8">
+  <title>Chart</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+  <script type="text/javascript" src="/static/js/trade.js"></script>
+  <script type="text/javascript" src="/static/js/config.js"></script>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-        google.charts.load('current', {'packages':['corechart', 'controls']});
-        var appUrl = {{ .appUrl }}
-    </script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart', 'controls']});
+      var appUrl = {{ .appUrl }}
+  </script>
 </head>
 <body>
 <div class="container">
@@ -22,50 +22,43 @@
       <input id="inputSmaPeriod2" type="number" value="14">
       <input id="inputSmaPeriod3" type="number" value="50">
     </div>
-
     <div>
       EMA <input id="inputEma" type="checkbox">
       Period<input id="inputEmaPeriod1" type="number" value="7">
       <input id="inputEmaPeriod2" type="number" value="14">
       <input id="inputEmaPeriod3" type="number" value="50">
     </div>
-
     <div>
       BBands <input id="inputBBands" type="checkbox">
       N <input id="inputBBandsN" type="number" value="20">
       K <input id="inputBBandsK" type="number" value="2">
     </div>
-
     <div>
       Ichimoku <input id="inputIchimoku" type="checkbox">
     </div>
-
     <div>
       Volume <input id="inputVolume" type="checkbox">
     </div>
-
     <div>
       Rsi <input id="inputRsi" type="checkbox">
       Period <input id="inputRsiPeriod" type="number" value="14">
     </div>
-
     <div>
       MACD <input id="inputMacd" type="checkbox">
       Period<input id="inputMacdPeriod1" type="number" value="12">
       <input id="inputMacdPeriod2" type="number" value="26">
       <input id="inputMacdPeriod3" type="number" value="9">
     </div>
-
     <div>
       HV <input id="inputHv" type="checkbox">
       Period<input id="inputHvPeriod1" type="number" value="21">
       <input id="inputHvPeriod2" type="number" value="63">
       <input id="inputHvPeriod3" type="number" value="252">
     </div>
-
     <div>
-      Events <input id="inputEvents" type="checkbox">
-      <div id="profit"></div>
+      <p>
+        利益: <span id="profit">0</span>円
+      </p>
     </div>
   </div>
   <form method="POST" class="setting-form">
