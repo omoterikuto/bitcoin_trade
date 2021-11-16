@@ -295,7 +295,7 @@ function send() {
             var data = JSON.parse(request.response);
             initConfigValues();
             var dataTable = new google.visualization.DataTable();
-            dataTable.addColumn('date', 'Date');
+            dataTable.addColumn('datetime', 'Date');
             dataTable.addColumn('number', 'Low');
             dataTable.addColumn('number', 'Open');
             dataTable.addColumn('number', 'Close');

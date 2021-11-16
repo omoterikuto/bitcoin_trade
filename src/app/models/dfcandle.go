@@ -430,8 +430,6 @@ func (df *DataFrameCandle) OptimizeRsi() (performance float64, bestPeriod int, b
 		if performance < profit {
 			performance = profit
 			bestPeriod = period
-			bestBuyThread = bestBuyThread
-			bestSellThread = bestSellThread
 		}
 	}
 	return performance, bestPeriod, bestBuyThread, bestSellThread
