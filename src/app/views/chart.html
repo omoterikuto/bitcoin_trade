@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Chart</title>
   <link rel="stylesheet" type="text/css" href="/static/css/style.css">
   <script type="text/javascript" src="/static/js/trade.js"></script>
@@ -16,6 +17,7 @@
 <body>
 <div class="container">
   <div id="indicator" class="indicator">
+    <h3>インディケーター</h3>
     <div>
       SMA <input id="inputSma" type="checkbox">
       Period<input id="inputSmaPeriod1" type="number" value="7">
@@ -55,7 +57,14 @@
       <input id="inputHvPeriod2" type="number" value="63">
       <input id="inputHvPeriod3" type="number" value="252">
     </div>
-    <div>
+    <div class="available-currency">
+      <h3>保有資産</h3>
+      <p>
+        {{ .availableCurrency }}円
+      </p>
+      <p>
+        {{ .availableCoin }}BTC
+      </p>
       <p>
         利益: <span id="profit">0</span>円
       </p>
@@ -101,15 +110,6 @@
     <div id="chart_div"></div>
     <div id="technical_div"></div>
     <div id="filter_div"></div>
-</div>
-<div class="available-currency">
-  <h3>保有資産</h3>
-  <p>
-    {{ .availableCurrency }}jpy
-  </p>
-  <p>
-    {{ .availableCoin }}BTC
-  </p>
 </div>
 
 </body>
