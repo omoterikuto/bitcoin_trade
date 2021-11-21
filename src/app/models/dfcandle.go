@@ -220,7 +220,7 @@ func (df *DataFrameCandle) BackTestEma(period1, period2 int) *SignalEvents {
 	if lenCandles <= period1 || lenCandles <= period2 {
 		return nil
 	}
-	signalEvents := NewSignalEvents()
+	signalEvents := &SignalEvents{}
 	emaValue1 := talib.Ema(df.Closes(), period1)
 	emaValue2 := talib.Ema(df.Closes(), period2)
 
@@ -400,7 +400,7 @@ func (df *DataFrameCandle) BackTestRsi(period int, buyThread, sellThread float64
 		return nil
 	}
 
-	signalEvents := NewSignalEvents()
+	signalEvents := &SignalEvents{}
 	values := talib.Rsi(df.Closes(), period)
 	for i := 1; i < lenCandles; i++ {
 		if values[i-1] == 0 || values[i-1] == 100 {

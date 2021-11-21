@@ -26,7 +26,7 @@ type AI struct {
 	UseRate              float64
 	MinuteToExpires      int
 	Duration             time.Duration
-	PastPeriod           int
+	DataLimit            int
 	SignalEvents         *models.SignalEvents
 	OptimizedTradeParams *models.TradeParams
 	TradeSemaphore       *semaphore.Weighted
@@ -38,11 +38,11 @@ type AI struct {
 
 var Ai = &AI{}
 
-func NewAI(productCode string, duration time.Duration, pastPeriod int, UseRate, StopLimitRate float64, backTest bool) *AI {
+func NewAI(productCode string, duration time.Duration, DataLimit int, UseRate, StopLimitRate float64, backTest bool) *AI {
 	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
 	var signalEvents *models.SignalEvents
 	if backTest {
-		signalEvents = models.NewSignalEvents()
+		signalEvents = &models.SignalEvents{}
 	} else {
 		signalEvents = models.GetSignalEventsByCount(1)
 	}
@@ -55,7 +55,7 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UseRate, 
 		CurrencyCode:    codes[1],
 		UseRate:         UseRate,
 		MinuteToExpires: 1,
-		PastPeriod:      pastPeriod,
+		DataLimit:       DataLimit,
 		Duration:        duration,
 		SignalEvents:    signalEvents,
 		TradeSemaphore:  semaphore.NewWeighted(1),
@@ -68,7 +68,7 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UseRate, 
 }
 
 func (ai *AI) UpdateOptimizeParams(isContinue bool) {
-	df, _ := models.GetAllCandle(ai.ProductCode, ai.Duration, ai.PastPeriod)
+	df, _ := models.GetAllCandle(ai.ProductCode, ai.Duration, ai.DataLimit)
 	ai.OptimizedTradeParams = df.OptimizeParams()
 	log.Printf("optimized_trade_params=%+v", ai.OptimizedTradeParams)
 	if ai.OptimizedTradeParams == nil && isContinue && !ai.BackTest {
@@ -175,7 +175,7 @@ func (ai *AI) Trade() {
 	if params == nil {
 		return
 	}
-	df, _ := models.GetAllCandle(ai.ProductCode, ai.Duration, ai.PastPeriod)
+	df, _ := models.GetAllCandle(ai.ProductCode, ai.Duration, ai.DataLimit)
 	lenCandles := len(df.Candles)
 
 	var emaValues1 []float64
